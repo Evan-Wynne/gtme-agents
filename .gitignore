@@ -1,0 +1,8 @@
+.env
+.env.*
+node_modules/
+.DS_Store
+# Keep personal data out of git
+data/**/*.csv
+data/**/*.xlsx
+data/**/*.json
