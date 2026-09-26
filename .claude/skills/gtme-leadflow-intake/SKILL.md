@@ -18,11 +18,18 @@ Evan writing requirements by hand. Building the flow is a separate, later step.
   get Evan's explicit OK before they go into the spec.
 - The spec holds criteria only — no prospect names, emails or lead lists in the repo.
 
-## Step 1 — Quick context from Evan (chat, ≤ 5 questions)
+## Step 1 — Research the client, ask Evan as little as possible
 
-Ask only what the form needs to be tailored; skip anything Evan already said:
-client name and website, what they sell (one line), where leads should land (Clay / Attio /
-sheet / client CRM), deadline, anything already agreed on the call.
+- **Research, don't ask:** work out what the client sells, which markets and roles they serve,
+  and their deal model from their website and a web search (cite the sources). Never ask Evan
+  what the client sells.
+- **Never ask about deadlines.**
+- **Default destination:** a new tab named after the client in Evan's GTME Leads Google Sheet
+  (Drive). Create the tab with the `gtme-n8n-oneoff` skill (Google Sheets "create sheet").
+  Only ask about the destination if Evan names a different one.
+- **Ask Evan only for what's missing (≤ 2 questions):** client name/website, and anything
+  already agreed on the call (target countries, company size, titles, off-limits sources).
+  Whatever he's already said is settled — leave it out of the client form.
 
 ## Step 2 — Create the intake form (Tally connector)
 
@@ -40,6 +47,8 @@ Tally edits happen on an in-memory draft for this session; nothing exists in Tal
    - short text → `INPUT_TEXT`; long text → `TEXTAREA`; website → `INPUT_LINK`;
      number → `INPUT_NUMBER`; exclusion or suppression lists → `FILE_UPLOAD`
    - "+ Other" in the bank means `isOtherOption: true` on a last option.
+   Start with a short intro `TEXT` block stating what's already agreed (e.g. target region and
+   company size) so the client only confirms it instead of answering it again.
    Keep it to ~20 questions. Tally makes every question required by default — use
    `configure_blocks` to make the non-(req) ones optional.
 5. `apply_logic` for skips, e.g. hide the Compliance page unless they contact people in the
