@@ -23,6 +23,7 @@ screen and use this layout:
 ```markdown
 # Context: <topic>
 <date> · from <cloud/local> chat
+Repo: https://github.com/<owner>/<repo> · branch `<branch>`
 
 > New chat: read this, tell Evan where we are in 3 lines, then wait for his go.
 
@@ -35,6 +36,10 @@ screen and use this layout:
 ## Watch out for
 ```
 
+- Always fill in the repo link. Get it from `git remote get-url origin`, write it as
+  `https://github.com/<owner>/<repo>` (drop `.git`, and rewrite a `git@github.com:` remote the
+  same way), and add the current branch (`git branch --show-current`). If the chat worked in
+  more than one repo, list each one.
 - Include only facts, and mark anything you didn't check as **unverified**.
 - Leave out API keys, webhook URLs and lead contact details, because the file may get
   copied around.
