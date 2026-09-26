@@ -15,4 +15,5 @@ This repo supports Evan's go-to-market work (lead sourcing, enrichment, outreach
 
 ## Skills
 - Every skill for Evan is named `gtme-<name>` and lives in `.claude/skills/gtme-<name>/`.
+- When a `gtme-` skill fits the task, say in one line which skill and why, then invoke it. `.claude/settings.json` asks Evan to approve every `gtme-` skill call, so he just clicks approve (or declines and Claude works without it).
 - Whenever Evan seems to be doing the same kind of task again (same steps twice, or clearly recurring work like client intake, backfills, run debugging), suggest turning it into a `gtme-` skill: one line with a proposed name and what it would do. Create it only after he says yes.
