@@ -1,8 +1,8 @@
 # Intake question bank
 
 Pick and trim per client — aim for ~20 questions total. (MC) = multiple choice,
-(req) = required. Field types depend on what the Typeform connector exposes; if a type isn't
-available (e.g. file upload), fall back to a long-text or URL question.
+(req) = required. Block types for Tally are mapped in SKILL.md Step 2; one Tally page per
+section below.
 
 ## A. About you
 1. Company name and website (req)

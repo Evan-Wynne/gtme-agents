@@ -1,6 +1,6 @@
 ---
 name: gtme-leadflow-intake
-description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Typeform connector (every question needed to design the flow), turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
+description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector (every question needed to design the flow), turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
 ---
 
 # gtme-leadflow-intake
@@ -24,24 +24,36 @@ Ask only what the form needs to be tailored; skip anything Evan already said:
 client name and website, what they sell (one line), where leads should land (Clay / Attio /
 sheet / client CRM), deadline, anything already agreed on the call.
 
-## Step 2 — Create the intake form (Typeform connector)
+## Step 2 — Create the intake form (Tally connector)
 
-1. Check the Typeform connector is loaded (ToolSearch `typeform`). If it is missing, tell Evan
-   to add it at claude.ai/customize/connectors (custom connector URL `https://api.typeform.com/mcp`,
-   OAuth — Typeform labels it beta) and start a new session. Offer Tally (already connected)
-   as a fallback, but only switch if Evan says so.
-2. Build `<Client> — Lead gen intake` from `references/question-bank.md`:
-   - Keep it to ~20 questions; prefer multiple choice; use logic jumps to skip sections that
-     don't apply (e.g. skip EU questions if they don't sell into the EU).
-   - Mark a question required only if the flow can't be designed without it.
-   - Budget questions are **not** in the client form unless Evan asks for them (Step 5 is
-     Evan-only).
-3. Reply with the share link and the edit link. Record the form ID in the spec (Step 4).
+Tally edits happen on an in-memory draft for this session; nothing exists in Tally until
+`save_form` is called.
+
+1. Check the Tally tools are loaded (ToolSearch `tally`). If not, tell Evan to enable the Tally
+   connector for this chat — don't switch to another form tool.
+2. `list_workspaces` → use the personal workspace if there is one, otherwise ask Evan.
+3. `create_new_form` with title `<Client> — Lead gen intake` and submit text "Send".
+4. `create_blocks` from `references/question-bank.md`, one page per section (`PAGE_BREAK`
+   with a page name). Block mapping:
+   - multi-select → `TITLE` + `CHECKBOX` options; single choice → `MULTIPLE_CHOICE_OPTION`
+     (or `DROPDOWN_OPTION` for long lists); yes/no → two `MULTIPLE_CHOICE_OPTION`s
+   - short text → `INPUT_TEXT`; long text → `TEXTAREA`; website → `INPUT_LINK`;
+     number → `INPUT_NUMBER`; exclusion or suppression lists → `FILE_UPLOAD`
+   - "+ Other" in the bank means `isOtherOption: true` on a last option.
+   Keep it to ~20 questions. Tally makes every question required by default — use
+   `configure_blocks` to make the non-(req) ones optional.
+5. `apply_logic` for skips, e.g. hide the Compliance page unless they contact people in the
+   EU/UK (use the uuids from the form ledger).
+6. `save_form` with status `DRAFT`, give Evan the link to review. Only after he says it's good,
+   `save_form` again with `formId` and status `PUBLISHED`, and hand him the share URL to send.
+   Budget questions are **not** in the client form unless Evan asks for them (Step 5 is
+   Evan-only). Record the form ID in the spec (Step 4).
 
 ## Step 3 — Read the answers
 
-When Evan says the client has replied, pull the responses through the connector. List any
-missing required answers for Evan to chase — don't guess them.
+When Evan says the client has replied, `fetch_submissions` with the form ID (status
+`completed`). List any missing required answers for Evan to chase — don't guess them. Answers
+stay in Tally; the spec summarises criteria only.
 
 ## Step 4 — Draft the flow spec
 
