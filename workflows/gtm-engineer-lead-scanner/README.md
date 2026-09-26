@@ -75,8 +75,7 @@ $0.002/post). Cap parameter: [Apify API — run Actor synchronously](https://doc
 
 - Scoring uses the LinkedIn headline only; job-ad posts and recruiters can score ≥ 6.
 - `company`, `location`, `email` are blank (short profile mode) — enrich in Clay.
-- Failure alerts fire for production runs only (not manual test runs), and only once the
-  Gmail credential is connected.
+- Failure alerts fire for production runs only (not manual test runs).
 
 ## Change log
 
@@ -85,5 +84,6 @@ $0.002/post). Cap parameter: [Apify API — run Actor synchronously](https://doc
   from profile URLs (existing 15 rows cleaned once); added `Send to Clay` branch and backfilled
   the first 15 leads to Clay.
 - 2026-09-26 — Schedule changed to weekly (Monday 08:00 Dublin). Added shared error workflow
-  `GTME – failure alerts` (Gmail → Evan's inbox); pending Gmail credential before it
-  can be published and attached.
+  `GTME – failure alerts` (Gmail → Evan's inbox).
+- 2026-09-26 — Gmail credential connected; `GTME – failure alerts` published and set as this
+  workflow's error workflow.
