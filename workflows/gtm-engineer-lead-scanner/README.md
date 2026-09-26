@@ -4,8 +4,21 @@ Weekly LinkedIn post search via Apify → AI relevance score → leads scoring �
 **GTME Leads** Google Sheet (`Linkedin` tab) and to a **Clay** webhook table.
 
 - Lives in n8n cloud as workflow `kyXDOp0XR4R1Lyul` ("GTM Engineer Lead Scanner").
-- This file is the setup checklist; the workflow itself is edited and published in n8n.
+- `workflow.json` is an importable export of the published version (2026-09-26). The live copy
+  in n8n is the source of truth — re-export here after changing it there.
 - No lead data belongs in this repo — leads stay in the sheet and in Clay.
+
+## Import from `workflow.json`
+
+n8n → Workflows → Import from file, then replace the placeholders:
+
+| Placeholder | Where | Set to |
+|---|---|---|
+| `REPLACE_WITH_GTME_LEADS_SHEET_ID` | 4 Google Sheets steps | the GTME Leads spreadsheet (pick it from the list) |
+| `REPLACE_WITH_CLAY_WEBHOOK_ID` | `Send to Clay` URL | the full webhook URL from the Clay table |
+
+Then re-attach credentials if n8n doesn't match them by ID, set the error workflow to
+`GTME – failure alerts` (Workflow settings), and publish. Node groups aren't in the export.
 
 ## Flow
 
@@ -62,8 +75,7 @@ $0.002/post). Cap parameter: [Apify API — run Actor synchronously](https://doc
 
 - Scoring uses the LinkedIn headline only; job-ad posts and recruiters can score ≥ 6.
 - `company`, `location`, `email` are blank (short profile mode) — enrich in Clay.
-- Failure alerts fire for production runs only (not manual test runs), and only once the
-  Gmail credential is connected.
+- Failure alerts fire for production runs only (not manual test runs).
 
 ## Change log
 
@@ -72,5 +84,6 @@ $0.002/post). Cap parameter: [Apify API — run Actor synchronously](https://doc
   from profile URLs (existing 15 rows cleaned once); added `Send to Clay` branch and backfilled
   the first 15 leads to Clay.
 - 2026-09-26 — Schedule changed to weekly (Monday 08:00 Dublin). Added shared error workflow
-  `GTME – failure alerts` (Gmail → Evan's inbox); pending Gmail credential before it
-  can be published and attached.
+  `GTME – failure alerts` (Gmail → Evan's inbox).
+- 2026-09-26 — Gmail credential connected; `GTME – failure alerts` published and set as this
+  workflow's error workflow.

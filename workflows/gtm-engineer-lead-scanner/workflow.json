@@ -1,0 +1,1233 @@
+{
+  "name": "GTM Engineer Lead Scanner",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "2c3895af-e299-4ae7-ae8e-6892b7ab1d13",
+      "name": "Every Monday 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/harvestapi~linkedin-post-search/run-sync-get-dataset-items?maxTotalChargeUsd=0.1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpTemplatedCustomAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ searchQueries: [\"gtm engineers\"], maxPosts: 45, sortBy: \"date\", postedLimit: \"month\", profileScraperMode: \"short\", scrapeReactions: false, scrapeComments: false }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "f9f21bc3-2463-4c71-bdcc-1225f00fd85a",
+      "name": "Apify post search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        272,
+        224
+      ],
+      "executeOnce": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpTemplatedCustomAuth": {
+          "id": "vNxNnvHdvTPlAyxo",
+          "name": "Apify API (evanwynne) (evanwynne)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "author.linkedinUrl",
+        "options": {}
+      },
+      "id": "9406f421-fd58-498f-a6f2-f54945ff9814",
+      "name": "Dedupe authors",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        496,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "name",
+              "name": "name",
+              "value": "={{ $json.author?.name }}",
+              "type": "string"
+            },
+            {
+              "id": "title",
+              "name": "title",
+              "value": "={{ $json.author?.info }}",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "location",
+              "name": "location",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "linkedin_url",
+              "name": "linkedin_url",
+              "value": "={{ ($json.author?.linkedinUrl || '').split('?')[0].replace(/\\/+$/, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "bio",
+              "name": "bio",
+              "value": "={{ $json.author?.info }}",
+              "type": "string"
+            },
+            {
+              "id": "post_url",
+              "name": "post_url",
+              "value": "={{ $json.linkedinUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "post_content",
+              "name": "post_content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "value": "LinkedIn",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "981318ad-cae2-4dfd-81c4-0f0747637108",
+      "name": "Normalize LinkedIn lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        720,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are scoring a prospect for relevance to the GTM (go-to-market) engineering space.\n\nLead:\nName: {{ $json.name }}\nTitle: {{ $json.title }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nBio/Headline: {{ $json.bio }}\n\nScore relevance 1-10 (10 = clearly a GTM engineer / GTM engineering leader). Classify the person as one of: \"agency\", \"consultant\", or \"employee\". Add up to 5 short relevant category tags (e.g. RevOps, outbound automation, Clay expert, founder, technical marketer). Give one short sentence of reasoning.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "ddba784d-acc1-45fc-833c-3972c50c8379",
+      "name": "Score LinkedIn lead",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        768,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "571f6899-296f-4435-8f53-6a5f0d2e941a",
+      "name": "OpenAI model (LinkedIn)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        784,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"relevance_score\":8,\"category\":\"employee\",\"tags\":[\"RevOps\",\"outbound automation\"],\"reasoning\":\"Clear GTM engineering title at a growth-stage company.\"}"
+      },
+      "id": "f5243265-6cc6-4188-90c1-75d1779b3e17",
+      "name": "Parse score (LinkedIn)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        912,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "name",
+              "name": "name",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.name }}"
+            },
+            {
+              "id": "title",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.title }}"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.company }}"
+            },
+            {
+              "id": "location",
+              "name": "location",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.location }}"
+            },
+            {
+              "id": "linkedin_url",
+              "name": "linkedin_url",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.linkedin_url }}"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.email }}"
+            },
+            {
+              "id": "post_url",
+              "name": "post_url",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.post_url }}"
+            },
+            {
+              "id": "post_content",
+              "name": "post_content",
+              "type": "string",
+              "value": "={{ $('Dedupe LinkedIn').item.json.post_content }}"
+            },
+            {
+              "id": "relevance_score",
+              "name": "relevance_score",
+              "type": "number",
+              "value": "={{ $json.output.relevance_score }}"
+            },
+            {
+              "id": "category",
+              "name": "category",
+              "type": "string",
+              "value": "={{ $json.output.category }}"
+            },
+            {
+              "id": "tags",
+              "name": "tags",
+              "type": "string",
+              "value": "={{ ($json.output.tags || []).join(', ') }}"
+            },
+            {
+              "id": "reasoning",
+              "name": "reasoning",
+              "type": "string",
+              "value": "={{ $json.output.reasoning }}"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "type": "string",
+              "value": "LinkedIn"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd6d5af8-fd25-403c-8076-eed9891fdc61",
+      "name": "Build LinkedIn row",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1120,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_GTME_LEADS_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "GTME Leads"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Linkedin"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "post_url",
+              "displayName": "post_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "post_content",
+              "displayName": "post_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "relevance_score",
+              "displayName": "relevance_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2767eaff-3381-4162-ae8a-da9b777cd427",
+      "name": "Append to LinkedIn tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        464
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U3s3O5ZAJXoCmDt8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clay-gtm-leads",
+        "options": {}
+      },
+      "id": "81f0ed90-5c29-461f-b78b-e3b13279dc34",
+      "name": "Clay export webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        544
+      ],
+      "webhookId": "47c56717-1e5a-4dab-9107-65ccb4738d21"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "name",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "title",
+              "name": "title",
+              "value": "={{ $json.body.title }}",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "value": "={{ $json.body.company }}",
+              "type": "string"
+            },
+            {
+              "id": "location",
+              "name": "location",
+              "value": "={{ $json.body.location }}",
+              "type": "string"
+            },
+            {
+              "id": "linkedin_url",
+              "name": "linkedin_url",
+              "value": "={{ $json.body.linkedin_url }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "bio",
+              "name": "bio",
+              "value": "={{ $json.body.bio }}",
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "value": "Clay",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c9fa86c-5b11-411e-a986-6d10323338e6",
+      "name": "Normalize Clay lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        352,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are scoring a prospect for relevance to the GTM (go-to-market) engineering space.\n\nLead:\nName: {{ $json.name }}\nTitle: {{ $json.title }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nBio/Headline: {{ $json.bio }}\n\nScore relevance 1-10 (10 = clearly a GTM engineer / GTM engineering leader). Classify the person as one of: \"agency\", \"consultant\", or \"employee\". Add up to 5 short relevant category tags (e.g. RevOps, outbound automation, Clay expert, founder, technical marketer). Give one short sentence of reasoning.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "a84c61f0-626a-47dc-a6a8-ca11303489bf",
+      "name": "Score Clay lead",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        576,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "f10380c5-8cf8-4054-90f4-ea48130f4080",
+      "name": "OpenAI model (Clay)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"relevance_score\":8,\"category\":\"consultant\",\"tags\":[\"Clay expert\",\"outbound automation\"],\"reasoning\":\"Freelance GTM engineer with a clear technical GTM focus.\"}"
+      },
+      "id": "67e11949-ccd2-412a-96ec-15a18a02a7eb",
+      "name": "Parse score (Clay)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "name",
+              "name": "name",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.name }}"
+            },
+            {
+              "id": "title",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.title }}"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.company }}"
+            },
+            {
+              "id": "location",
+              "name": "location",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.location }}"
+            },
+            {
+              "id": "linkedin_url",
+              "name": "linkedin_url",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.linkedin_url }}"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $('Dedupe Clay').item.json.email }}"
+            },
+            {
+              "id": "relevance_score",
+              "name": "relevance_score",
+              "type": "number",
+              "value": "={{ $json.output.relevance_score }}"
+            },
+            {
+              "id": "category",
+              "name": "category",
+              "type": "string",
+              "value": "={{ $json.output.category }}"
+            },
+            {
+              "id": "tags",
+              "name": "tags",
+              "type": "string",
+              "value": "={{ ($json.output.tags || []).join(', ') }}"
+            },
+            {
+              "id": "reasoning",
+              "name": "reasoning",
+              "type": "string",
+              "value": "={{ $json.output.reasoning }}"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "type": "string",
+              "value": "Clay"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07f077a9-dfff-402a-a6c7-5fcfe5c443b9",
+      "name": "Build Clay row",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        928,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_GTME_LEADS_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "GTME Leads"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Clay",
+          "cachedResultName": "Clay"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "linkedin_url",
+              "displayName": "linkedin_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "relevance_score",
+              "displayName": "relevance_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "39dc6179-4ed1-4026-ac3d-866ecebcde1c",
+      "name": "Append to Clay tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        608
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U3s3O5ZAJXoCmDt8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "GTME Leads",
+          "mode": "list",
+          "value": "REPLACE_WITH_GTME_LEADS_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Linkedin"
+        },
+        "options": {},
+        "resource": "sheet",
+        "operation": "read"
+      },
+      "id": "5e927b8d-5fae-49de-9de7-c8b09d4323eb",
+      "name": "Read LinkedIn tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        224
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U3s3O5ZAJXoCmDt8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Drop leads already in the LinkedIn tab (and repeats within this run)\nconst norm = u => (u || '').toLowerCase().trim().split('?')[0].replace(/\\/+$/, '');\nconst seen = new Set();\nfor (const r of $('Read LinkedIn tab').all()) {\n  const u = norm(r.json.linkedin_url);\n  if (u) seen.add(u);\n}\nconst out = [];\n$input.all().forEach((item, i) => {\n  const u = norm(item.json.linkedin_url);\n  if (!u || seen.has(u)) return;\n  seen.add(u);\n  out.push({ json: item.json, pairedItem: { item: i } });\n});\nreturn out;"
+      },
+      "id": "9ae34711-bfe3-46cb-80ac-b9fc4de2f37e",
+      "name": "Dedupe LinkedIn",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "minscore-li",
+              "leftValue": "={{ $json.relevance_score }}",
+              "operator": {
+                "operation": "gte",
+                "type": "number"
+              },
+              "rightValue": 6
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "6b6a7184-d777-4c5d-9848-d2b70ce9949e",
+      "name": "Score ≥ 6 (LinkedIn)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1232,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "GTME Leads",
+          "mode": "list",
+          "value": "REPLACE_WITH_GTME_LEADS_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Clay"
+        },
+        "options": {},
+        "resource": "sheet",
+        "operation": "read"
+      },
+      "id": "60220cc9-064a-4f6d-8c3c-86ebab3a31c8",
+      "name": "Read Clay tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        352,
+        752
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U3s3O5ZAJXoCmDt8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Drop Clay leads already in the Clay tab\nconst norm = u => (u || '').toLowerCase().trim().split('?')[0].replace(/\\/+$/, '');\nconst seen = new Set();\nfor (const r of $input.all()) {\n  const u = norm(r.json.linkedin_url);\n  if (u) seen.add(u);\n}\nconst out = [];\n$('Normalize Clay lead').all().forEach((item, i) => {\n  const u = norm(item.json.linkedin_url);\n  if (u && seen.has(u)) return;\n  if (u) seen.add(u);\n  out.push({ json: item.json, pairedItem: { item: 0 } });\n});\nreturn out;"
+      },
+      "id": "db5b7124-1106-45b1-a3f0-a1ed24d9d407",
+      "name": "Dedupe Clay",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "minscore-clay",
+              "leftValue": "={{ $json.relevance_score }}",
+              "operator": {
+                "operation": "gte",
+                "type": "number"
+              },
+              "rightValue": 6
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          }
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "9e3fbe8f-5a4c-4f53-a5c9-9c273089bbea",
+      "name": "Score ≥ 6 (Clay)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        752
+      ]
+    },
+    {
+      "id": "68a07c8d-f4a4-42dc-8a97-1011cbee39b2",
+      "name": "Send to Clay",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        656
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.clay.com/v3/sources/webhook/REPLACE_WITH_CLAY_WEBHOOK_ID",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: $json.name, title: $json.title, linkedin_url: $json.linkedin_url, post_url: $json.post_url, post_content: $json.post_content, relevance_score: $json.relevance_score, category: $json.category, tags: $json.tags, reasoning: $json.reasoning, source: $json.source, found_at: $now.toISO() }) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 5,
+              "batchInterval": 1000
+            }
+          }
+        }
+      },
+      "notes": "POSTs each saved lead to the Clay webhook table (GTM-E leads > Pull in data from a Webhook). Clay webhook: 50k submissions max, 10 req/s.",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    }
+  ],
+  "connections": {
+    "Apify post search": {
+      "main": [
+        [
+          {
+            "node": "Dedupe authors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedupe authors": {
+      "main": [
+        [
+          {
+            "node": "Normalize LinkedIn lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score LinkedIn lead": {
+      "main": [
+        [
+          {
+            "node": "Build LinkedIn row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI model (LinkedIn)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Score LinkedIn lead",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse score (LinkedIn)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Score LinkedIn lead",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clay export webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Clay lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Clay lead": {
+      "main": [
+        [
+          {
+            "node": "Build Clay row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI model (Clay)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Score Clay lead",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse score (Clay)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Score Clay lead",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read LinkedIn tab": {
+      "main": [
+        [
+          {
+            "node": "Apify post search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize LinkedIn lead": {
+      "main": [
+        [
+          {
+            "node": "Dedupe LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedupe LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Score LinkedIn lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build LinkedIn row": {
+      "main": [
+        [
+          {
+            "node": "Score ≥ 6 (LinkedIn)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score ≥ 6 (LinkedIn)": {
+      "main": [
+        [
+          {
+            "node": "Append to LinkedIn tab",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send to Clay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Clay lead": {
+      "main": [
+        [
+          {
+            "node": "Read Clay tab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Clay tab": {
+      "main": [
+        [
+          {
+            "node": "Dedupe Clay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dedupe Clay": {
+      "main": [
+        [
+          {
+            "node": "Score Clay lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Clay row": {
+      "main": [
+        [
+          {
+            "node": "Score ≥ 6 (Clay)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score ≥ 6 (Clay)": {
+      "main": [
+        [
+          {
+            "node": "Append to Clay tab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every Monday 08:00": {
+      "main": [
+        [
+          {
+            "node": "Read LinkedIn tab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Dublin",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

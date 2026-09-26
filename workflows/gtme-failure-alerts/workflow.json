@@ -1,0 +1,58 @@
+{
+  "name": "GTME – failure alerts",
+  "nodes": [
+    {
+      "id": "76376891-b785-4525-90fb-8aeeba54a343",
+      "name": "On workflow failure",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "4ccb143f-60cd-4bbc-875f-dc98d80140da",
+      "name": "Email failure alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "REPLACE_WITH_ALERT_EMAIL",
+        "subject": "=[n8n] {{ $json.workflow.name }} failed at {{ $json.execution.lastNodeExecuted || \"unknown step\" }}",
+        "emailType": "text",
+        "message": "=Workflow: {{ $json.workflow.name }}\nFailed step: {{ $json.execution.lastNodeExecuted || \"unknown\" }}\nError: {{ $json.execution.error?.message || \"no message\" }}\nRun mode: {{ $json.execution.mode }}\nTime (Dublin): {{ $now.setZone(\"Europe/Dublin\").toFormat(\"yyyy-LL-dd HH:mm\") }}\n\nOpen the failed run: {{ $json.execution.url || \"n/a\" }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "webhookId": "1b89f8e9-8fcc-4c8a-bd1f-14e4d5dbce30"
+    }
+  ],
+  "connections": {
+    "On workflow failure": {
+      "main": [
+        [
+          {
+            "node": "Email failure alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
