@@ -4,8 +4,21 @@ Weekly LinkedIn post search via Apify → AI relevance score → leads scoring �
 **GTME Leads** Google Sheet (`Linkedin` tab) and to a **Clay** webhook table.
 
 - Lives in n8n cloud as workflow `kyXDOp0XR4R1Lyul` ("GTM Engineer Lead Scanner").
-- This file is the setup checklist; the workflow itself is edited and published in n8n.
+- `workflow.json` is an importable export of the published version (2026-09-26). The live copy
+  in n8n is the source of truth — re-export here after changing it there.
 - No lead data belongs in this repo — leads stay in the sheet and in Clay.
+
+## Import from `workflow.json`
+
+n8n → Workflows → Import from file, then replace the placeholders:
+
+| Placeholder | Where | Set to |
+|---|---|---|
+| `REPLACE_WITH_GTME_LEADS_SHEET_ID` | 4 Google Sheets steps | the GTME Leads spreadsheet (pick it from the list) |
+| `REPLACE_WITH_CLAY_WEBHOOK_ID` | `Send to Clay` URL | the full webhook URL from the Clay table |
+
+Then re-attach credentials if n8n doesn't match them by ID, set the error workflow to
+`GTME – failure alerts` (Workflow settings), and publish. Node groups aren't in the export.
 
 ## Flow
 
