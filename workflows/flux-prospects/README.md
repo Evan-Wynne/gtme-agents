@@ -192,6 +192,10 @@ Not tested live: Hunter's real responses for "rate limit" (403), "out of credits
 code Hunter uses for "out of credits" is **unverified**.
 
 ## Notes
+- Hunter costs seen on 2026-09-30: 10 Domain Searches through the Hunter connector (limit 1,
+  executive seniority) used 10 search credits **and 20 verifications**. The Hunter tool
+  description only mentions search credits, and the reason for the extra verifications is
+  **unverified**. Check the balance before and after any Hunter search batch.
 - You're in the EU. These tables hold personal data (names, work emails), so keep your
   lawful-basis note for outreach handy and honour opt-outs through `flux_suppression`. Never
   commit real lead lists to this repo.
