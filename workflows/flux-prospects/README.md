@@ -12,6 +12,7 @@ they opt out. It all lives in your n8n cloud: no external database, nothing to h
 | **Flux - add prospects** | n8n workflow `jd3bLRq4OnDppFb9` | Puts a new list into `flux_prospects` |
 | **Flux - verify new prospects** | n8n workflow `X6xFr8B85LTiBbsr` | Checks new emails with Hunter |
 | **Flux - export send batch** | n8n workflow `mzEedCa9X0bvIY7M` | Gives you a ready-to-import list in Google Sheets |
+| **Flux - mark contacted** | n8n workflow `nkQ2KqTdbUGBl8qE` | After you send: marks a batch (or pasted emails) as contacted |
 | **Flux Prospects** sheet | Google Drive → Flux GTM | One tab per export: "Send batch <date> <time>" |
 
 None of the workflows is published. You run each one by hand with **Execute workflow**. All
@@ -24,7 +25,7 @@ clients and leads) and fluxgtm.com, gtmflux.com (your own domains).
 ## The life of a prospect (the `status` column)
 
 ```
-new ──verify──► verified ──export──► queued ──(you)──► contacted ► replied ► meeting ► client
+new ──verify──► verified ──export──► queued ──mark contacted──► contacted ► replied ► meeting ► client
   │               
   └──verify──► invalid        catch-all: stays new, note "catch-all, low priority"
 
@@ -35,8 +36,8 @@ do_not_contact: set by you, any time
 - **Verify** sets `verified` or `invalid`. A catch-all stays `new` with a note, and is never
   checked again, so it doesn't eat credits.
 - **Export** sets `queued`.
-- Everything after that you set by hand for now: `contacted`, `replied`, `meeting`, `client`
-  and `do_not_contact`.
+- **Mark contacted** sets `contacted`, plus `last_contacted_at`, after you've sent.
+- You set the rest by hand for now: `replied`, `meeting`, `client` and `do_not_contact`.
 
 ## What each workflow does
 
@@ -149,10 +150,27 @@ Do both of these:
 2. **Keep your records right:** n8n → Data tables → `flux_prospects` → find their row → set
    `status` to `do_not_contact`, and add a line in `notes` if useful.
 
-## After you send a batch
-Set those people's `status` to `contacted`, `last_contacted_at` to the send date, and
-`sequence_name` if you like. The 90-day rule uses `last_contacted_at`. A "mark contacted" step
-isn't built yet.
+## After you send a batch: Flux - mark contacted
+Run **Flux - mark contacted** (n8n workflow `nkQ2KqTdbUGBl8qE`):
+1. Double-click **What did you send?** and fill in either:
+   - `send_batch_tab`: the tab name from Flux Prospects, e.g. `Send batch 2026-09-30 2046`; or
+   - `emails`: paste emails, one per line or comma separated.
+
+   You can fill in both.
+2. Optionally fill in `sequence_name` (which campaign) and `contacted_on` (defaults to today;
+   format 2026-10-01).
+3. Click **Execute workflow**.
+
+Each person found gets `status` = `contacted`, `last_contacted_at` = the send date, and your
+`sequence_name`. The export's 90-day rule reads `last_contacted_at`.
+
+People already at `replied`, `meeting`, `client` or `do_not_contact` are **left alone**, so a
+later campaign never downgrades them. The summary lists them, plus any emails that aren't in
+`flux_prospects`.
+
+Tested 2026-09-30 (run #44, fake rows, deleted afterwards): 2 emails came from the tab and 2
+were pasted. 1 `queued` row was marked contacted, the `replied` and `do_not_contact` rows were
+left alone, and 1 unknown email was reported as not in the store.
 
 ## Setup checklist
 
