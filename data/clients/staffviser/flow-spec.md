@@ -32,14 +32,14 @@ Rubric from the intake's "perfect lead / reject" answer.
 ## Cadence and volume
 From intake (leads per week); cadence proposed in the budget step.
 
-## Budget (agreed with Evan)
-| Item | Value |
+## Budget (from the intake form's Budget page, as answered, with no calculations)
+| Item | Answer |
 |---|---|
+| Monthly ceiling (USD) | |
 | Paying Apify account | |
-| Per-run hard cap (`maxTotalChargeUsd`) | |
-| Runs per month | |
-| Worst case per month | |
-| Paid add-ons allowed | |
+| Cadence | |
+| Per-run hard cap (`maxTotalChargeUsd`, USD) | |
+| Paid extras allowed | |
 
 ## Compliance
 US-first (outside GDPR); any EU/UK contacts need the lawful-basis owner from the intake.

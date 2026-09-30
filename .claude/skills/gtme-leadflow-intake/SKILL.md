@@ -1,6 +1,6 @@
 ---
 name: gtme-leadflow-intake
-description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector (every question needed to design the flow), turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
+description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector covering every question needed to design the flow, including an Apify budget page (monthly ceiling, who pays, cadence, per-run cap, paid extras). Turns the answers into a spec before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
 ---
 
 # gtme-leadflow-intake
@@ -33,8 +33,8 @@ Evan writing requirements by hand. Building the flow is a separate, later step.
 
 ## Step 2 — Create the intake form (Tally connector)
 
-Tally edits happen on an in-memory draft for this session; nothing exists in Tally until
-`save_form` is called.
+`create_new_form` creates a draft form straight away. Every edit after that is saved as an
+unpublished change. Nothing goes live until you call `publish_form`.
 
 1. Check the Tally tools are loaded (ToolSearch `tally`). If not, tell Evan to enable the Tally
    connector for this chat — don't switch to another form tool.
@@ -49,14 +49,16 @@ Tally edits happen on an in-memory draft for this session; nothing exists in Tal
    - "+ Other" in the bank means `isOtherOption: true` on a last option.
    Start with a short intro `TEXT` block stating what's already agreed (e.g. target region and
    company size) so the client only confirms it instead of answering it again.
-   Keep it to ~20 questions. Tally makes every question required by default — use
+   Keep it to ~25 questions, including the Budget page. Tally makes every question required by default — use
    `configure_blocks` to make the non-(req) ones optional.
 5. `apply_logic` for skips, e.g. hide the Compliance page unless they contact people in the
    EU/UK (use the uuids from the form ledger).
-6. `save_form` with status `DRAFT`, give Evan the link to review. Only after he says it's good,
-   `save_form` again with `formId` and status `PUBLISHED`, and hand him the share URL to send.
-   Budget questions are **not** in the client form unless Evan asks for them (Step 5 is
-   Evan-only). Record the form ID in the spec (Step 4).
+6. Always include the **Budget** page (section J of the question bank) as the last page before
+   submit. Use `INPUT_NUMBER` for the USD amounts. Add no calculated fields, totals or cost
+   estimates: Evan does the calculations himself from the answers.
+7. Give Evan the edit link (`https://tally.so/forms/<id>/edit`) to review. Only after he says
+   it's good, call `publish_form` and hand him the share URL to send. Record the form ID in
+   the spec (Step 4).
 
 ## Step 3 — Read the answers
 
@@ -71,18 +73,12 @@ source, find 1–3 candidate Apify Actors with `search-actors`, then `fetch-acto
 (pricing, monthly users, last modified, deprecation). Prefer maintained, widely used Actors.
 Put open questions at the bottom instead of inventing answers.
 
-## Step 5 — Apify budget with Evan (always, before any build)
+## Step 5 — Budget from the form (always, before any build)
 
-Ask Evan, in one message:
-1. Monthly Apify ceiling for this client, and whose Apify account pays (Evan's or client's)?
-2. Cadence — propose one from the client's volume target (daily / weekly / monthly).
-3. Hard cap per run — becomes `maxTotalChargeUsd` on every run call, no exceptions.
-4. Paid add-ons allowed? (full profiles, emails, comments/reactions, extra pages)
-
-Then show a small table from live pricing: events per run × price = cost per run; runs per
-month; worst case per month = cap × runs. If the volume target doesn't fit the ceiling, say so
-and offer trade-offs (fewer items per run, cheaper Actor, lower cadence, narrower query).
-Write the agreed numbers into the spec's Budget section.
+Copy the Budget page answers into the spec's Budget section as given: monthly ceiling, who
+pays, cadence, per-run cap and paid extras. Don't calculate costs or build cost tables. Evan
+does that himself from Tally. The per-run cap becomes `maxTotalChargeUsd` on every run call,
+with no exceptions. If a budget answer is missing, list it for Evan to chase.
 
 ## Step 6 — Hand-off
 

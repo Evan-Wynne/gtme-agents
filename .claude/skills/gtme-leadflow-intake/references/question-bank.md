@@ -1,6 +1,7 @@
 # Intake question bank
 
-Pick and trim per client — aim for ~20 questions total. (MC) = multiple choice,
+Pick and trim per client. Aim for about 25 questions in total, and always keep section J
+(Budget). (MC) = multiple choice,
 (req) = required. Block types for Tally are mapped in SKILL.md Step 2; one Tally page per
 section below.
 
@@ -52,5 +53,15 @@ section below.
 25. Describe a perfect lead, and a lead you'd reject (long text) (req)
 26. Who approves the first batch, and how should we report? (short text)
 
-## Evan-only (never in the client form unless Evan asks)
-- Apify budget, per-run cap, whose Apify account pays — handled in Step 5 of the skill.
+## J. Budget (scraping costs)
+Intro text: "We use Apify to find leads, and it charges per result. These answers set the
+spending limits. We never go over them."
+27. Monthly ceiling for scraping costs, in USD (number) (req)
+28. Whose Apify account pays? (MC: yours, billed to your card; ours, passed on at cost) (req)
+29. How often should new leads come in? (MC: daily, weekly, monthly) (req)
+30. Maximum spend per run, in USD. We use it as a hard stop on every run. (number) (req)
+31. Paid extras allowed? (MC, multi-select: full LinkedIn profiles, email finding,
+    post comments/reactions, extra result pages, none)
+
+No calculations in the form (no calculated fields, no cost totals). Evan does the maths from
+the answers himself.

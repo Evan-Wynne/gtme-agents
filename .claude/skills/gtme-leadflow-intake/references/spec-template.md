@@ -24,14 +24,14 @@ Where rows land, dedupe key (clean LinkedIn URL or domain), who sends, which too
 ## Cadence and volume
 Runs per week/month, items per run, expected qualified leads per run.
 
-## Budget (agreed with Evan)
-| Item | Value |
+## Budget (from the intake form's Budget page, as answered, with no calculations)
+| Item | Answer |
 |---|---|
+| Monthly ceiling (USD) | |
 | Paying Apify account | |
-| Per-run hard cap (`maxTotalChargeUsd`) | |
-| Runs per month | |
-| Worst case per month | |
-| Paid add-ons allowed | |
+| Cadence | |
+| Per-run hard cap (`maxTotalChargeUsd`, USD) | |
+| Paid extras allowed | |
 
 ## Compliance
 Regions contacted, lawful basis owner, suppression list, retention.
