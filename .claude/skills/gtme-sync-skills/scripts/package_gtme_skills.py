@@ -27,6 +27,8 @@ def check(skill_dir):
         return "frontmatter name doesn't match the folder name"
     if not desc or len(desc.group(1).strip()) > 1024:
         return "description missing or longer than 1024 characters"
+    if "<" in desc.group(1) or ">" in desc.group(1):
+        return "description has < or >, which claude.ai rejects as XML tags"
     return None
 
 
