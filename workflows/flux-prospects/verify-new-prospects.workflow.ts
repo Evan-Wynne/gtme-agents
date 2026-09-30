@@ -17,7 +17,7 @@ const settings = node({
       includeOtherFields: false,
       assignments: {
         assignments: [
-          { id: 'set-max', name: 'max_to_verify', value: 50, type: 'number' },
+          { id: 'set-max', name: 'max_to_verify', value: 10, type: 'number' },
           { id: 'set-score', name: 'min_score', value: 80, type: 'number' }
         ]
       },

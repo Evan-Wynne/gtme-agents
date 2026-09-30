@@ -59,7 +59,7 @@ At the end it shows a summary: `added`, `skipped_duplicate`, `skipped_suppressed
 Run it after adding a list. It:
 
 1. Reads your Hunter balance (free) and never asks for more checks than you have left.
-2. Takes up to 50 prospects with status `new` that haven't been checked yet, oldest first.
+2. Takes up to **max_to_verify** prospects with status `new` (set to 10 for the first live test; can go up to 50) that haven't been checked yet, oldest first.
 3. Checks each one with Hunter Email Verifier, about 4 per second. Hunter's limit is 10 per
    second and 300 per minute.
 4. Sets the result:
