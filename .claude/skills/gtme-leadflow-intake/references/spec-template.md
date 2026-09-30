@@ -21,6 +21,11 @@ Rubric (1–10), threshold, examples of good and bad leads from the intake.
 ## Destination and outreach
 Where rows land, dedupe key (clean LinkedIn URL or domain), who sends, which tool.
 
+## Revenue target (from the intake, as answered)
+Target and period, average customer value, meeting-to-customer rate, sales cycle, outbound
+share, and past outbound rates. Evan's outbound-volume estimate goes here once he's made it;
+don't calculate it for him.
+
 ## Cadence and volume
 Runs per week/month, items per run, expected qualified leads per run.
 

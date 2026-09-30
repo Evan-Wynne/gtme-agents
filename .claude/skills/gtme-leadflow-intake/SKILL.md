@@ -1,6 +1,6 @@
 ---
 name: gtme-leadflow-intake
-description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector (every question needed to design the flow), turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
+description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector covering every question needed to design the flow, plus a revenue-target page Evan uses to estimate outbound volume. Turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
 ---
 
 # gtme-leadflow-intake
@@ -33,8 +33,8 @@ Evan writing requirements by hand. Building the flow is a separate, later step.
 
 ## Step 2 — Create the intake form (Tally connector)
 
-Tally edits happen on an in-memory draft for this session; nothing exists in Tally until
-`save_form` is called.
+`create_new_form` creates a draft form straight away. Every edit after that is saved as an
+unpublished change. Nothing goes live until you call `publish_form`.
 
 1. Check the Tally tools are loaded (ToolSearch `tally`). If not, tell Evan to enable the Tally
    connector for this chat — don't switch to another form tool.
@@ -49,14 +49,17 @@ Tally edits happen on an in-memory draft for this session; nothing exists in Tal
    - "+ Other" in the bank means `isOtherOption: true` on a last option.
    Start with a short intro `TEXT` block stating what's already agreed (e.g. target region and
    company size) so the client only confirms it instead of answering it again.
-   Keep it to ~20 questions. Tally makes every question required by default — use
+   Keep it to ~25 questions. Tally makes every question required by default — use
    `configure_blocks` to make the non-(req) ones optional.
 5. `apply_logic` for skips, e.g. hide the Compliance page unless they contact people in the
    EU/UK (use the uuids from the form ledger).
-6. `save_form` with status `DRAFT`, give Evan the link to review. Only after he says it's good,
-   `save_form` again with `formId` and status `PUBLISHED`, and hand him the share URL to send.
-   Budget questions are **not** in the client form unless Evan asks for them (Step 5 is
-   Evan-only). Record the form ID in the spec (Step 4).
+6. Always include the **Revenue target** page (section J of the question bank). Use
+   `INPUT_NUMBER` for amounts and percentages. Add no calculated fields or estimates: Evan
+   reads the answers in Tally and works out the outbound volume himself before his next call.
+7. Give Evan the edit link (`https://tally.so/forms/<id>/edit`) to review. Only after he says
+   it's good, call `publish_form` and hand him the share URL to send. Apify budget questions
+   are **not** in the client form unless Evan asks for them (Step 5 is Evan-only). Record the
+   form ID in the spec (Step 4).
 
 ## Step 3 — Read the answers
 

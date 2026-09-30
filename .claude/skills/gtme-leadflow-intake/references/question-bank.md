@@ -1,6 +1,7 @@
 # Intake question bank
 
-Pick and trim per client — aim for ~20 questions total. (MC) = multiple choice,
+Pick and trim per client. Aim for about 25 questions in total, and always keep section J
+(Revenue target). (MC) = multiple choice,
 (req) = required. Block types for Tally are mapped in SKILL.md Step 2; one Tally page per
 section below.
 
@@ -51,6 +52,18 @@ section below.
 ## I. What good looks like
 25. Describe a perfect lead, and a lead you'd reject (long text) (req)
 26. Who approves the first batch, and how should we report? (short text)
+
+## J. Revenue target (always include)
+Evan uses these answers to estimate how much outbound is needed before his next call with the
+client. Ask for the raw numbers only: no calculated fields, totals or estimates in the form.
+27. New revenue you want from new customers (number, in their currency) (req)
+28. Over what period? (MC: next 3 months, next 6 months, next 12 months + Other) (req)
+29. Average first-year value of a new customer (number) (req)
+30. Roughly what share of sales calls or meetings turn into a customer? (number, %)
+31. Typical time from first meeting to signed deal (MC: <1 month, 1–3 months, 3–6 months, 6+ months)
+32. How much of this target should come from outbound? (number, %)
+33. If you've done outbound before: reply rate and meeting rate you saw (short text, optional)
+34. How many new customers can you take on per month? (number, optional)
 
 ## Evan-only (never in the client form unless Evan asks)
 - Apify budget, per-run cap, whose Apify account pays — handled in Step 5 of the skill.
