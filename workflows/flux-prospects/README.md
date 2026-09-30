@@ -187,6 +187,10 @@ copy, use n8n → workflow → ⋯ → Download.
 | export #37 (real sheet write) | 1 verified prospect | tab created with a header row and 1 row; prospect marked queued |
 | export #38 | verified-then-unsubscribed prospect; already-queued prospect | skipped_suppressed 1, no re-export, no empty tab |
 
+First live run, 2026-09-30: 10 real prospects (Irish recruitment founders) added with add run
+#41 (added 10). Verify run #42 checked all 10 with Hunter: 10 verified (scores 89–100), 0
+invalid, 0 catch-all.
+
 Not tested live: Hunter's real responses for "rate limit" (403), "out of credits" mid-run
 (429) and "still checking" (202). The code leaves those rows alone either way. Which error
 code Hunter uses for "out of credits" is **unverified**.
@@ -196,6 +200,9 @@ code Hunter uses for "out of credits" is **unverified**.
   executive seniority) used 10 search credits **and 20 verifications**. The Hunter tool
   description only mentions search credits, and the reason for the extra verifications is
   **unverified**. Check the balance before and after any Hunter search batch.
+- The first live verify run (2026-09-30, 10 real prospects) used 10 verifications **and 5
+  search credits**, so each check apparently also counts as half a search credit (observed, not
+  documented). Budget for both counters.
 - You're in the EU. These tables hold personal data (names, work emails), so keep your
   lawful-basis note for outreach handy and honour opt-outs through `flux_suppression`. Never
   commit real lead lists to this repo.
