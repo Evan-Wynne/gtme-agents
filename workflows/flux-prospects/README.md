@@ -162,10 +162,11 @@ isn't built yet.
       export workflow file uses `REPLACE_WITH_FLUX_PROSPECTS_SHEET_ID`.
 - [x] Error workflow set on all three: GTME – failure alerts (`MrGJ9sB98EIiZz55`).
 - [x] Google Sheets credential: reuses "Google Sheets account".
-- [ ] **Hunter credential "Hunter API (evanwynne)"**: not created yet, waiting for Evan's OK.
-      Both Hunter nodes in the verify workflow need it: **Check Hunter credits** and **Hunter
-      email verifier**. It's the same kind as your Apify credential. Hunter wants the key sent
-      as the query parameter `api_key`.
+- [ ] **Hunter credential "Hunter API (evanwynne)"**: Evan is creating it by hand in n8n.
+      Both Hunter nodes in the verify workflow use it: **Check Hunter credits** and **Hunter
+      email verifier**. Type: **Query Auth**, Name `api_key`, Value = the Hunter key. The
+      "Simplified Custom Auth" type didn't work here: its test failed with "credential test URL
+      is not bound to its service origin", and it offered no box for the key.
 - [ ] Publish **Flux - add prospects** only if you want the webhook live.
 
 Files in this folder: `*.workflow.ts` is the n8n Workflow SDK source for each workflow. To

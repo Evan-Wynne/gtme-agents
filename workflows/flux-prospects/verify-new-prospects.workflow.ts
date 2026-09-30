@@ -40,10 +40,10 @@ const checkCredits = node({
       method: 'GET',
       url: 'https://api.hunter.io/v2/account',
       authentication: 'genericCredentialType',
-      genericAuthType: 'httpTemplatedCustomAuth',
+      genericAuthType: 'httpQueryAuth',
       options: { timeout: 20000 }
     },
-    credentials: { httpTemplatedCustomAuth: newCredential('Hunter API (evanwynne)') }
+    credentials: { httpQueryAuth: newCredential('Hunter API (evanwynne)') }
   },
   output: [{ data: { plan_name: 'Free', reset_date: '2026-10-05', requests: { verifications: { used: 16, available: 100 } } } }]
 });
@@ -144,7 +144,7 @@ const verifyEmail = node({
       method: 'GET',
       url: 'https://api.hunter.io/v2/email-verifier',
       authentication: 'genericCredentialType',
-      genericAuthType: 'httpTemplatedCustomAuth',
+      genericAuthType: 'httpQueryAuth',
       sendQuery: true,
       specifyQuery: 'keypair',
       queryParameters: { parameters: [{ name: 'email', value: expr('{{ $json.email }}') }] },
@@ -154,7 +154,7 @@ const verifyEmail = node({
         timeout: 30000
       }
     },
-    credentials: { httpTemplatedCustomAuth: newCredential('Hunter API (evanwynne)') }
+    credentials: { httpQueryAuth: newCredential('Hunter API (evanwynne)') }
   },
   output: [{ statusCode: 200, headers: {}, body: { data: { email: 'jane@acme.com', status: 'valid', result: 'deliverable', score: 95 } } }]
 });
