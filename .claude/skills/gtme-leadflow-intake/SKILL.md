@@ -1,6 +1,6 @@
 ---
 name: gtme-leadflow-intake
-description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector covering every question needed to design the flow, plus a revenue-target page Evan uses to estimate outbound volume. Turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for <client>", "set up a lead flow for <client>".
+description: Turn a client's lead-gen request into an approved, buildable flow spec. Creates a client intake form with the Tally connector covering every question needed to design the flow, plus a revenue-target page Evan uses to estimate outbound volume. Turns the answers into a spec, then walks Evan through the Apify budget (per-run cap, cadence, monthly ceiling) before anything is built. Use when Evan has a new client or lead-gen flow to scope — e.g. "new client wants leads", "describe the lead gen flow I want", "scope/intake for Acme", "set up a lead flow for this client".
 ---
 
 # gtme-leadflow-intake
