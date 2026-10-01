@@ -26,14 +26,21 @@ send them to Evan so he can install them with one click.
 python3 <this skill>/scripts/package_gtme_skills.py <scratchpad>/sync/.claude/skills <scratchpad>/gtme-skills
 ```
 
-This zips every `gtme-*` folder into `<name>.skill`, with the folder at the root of the zip,
-and skips any skill whose frontmatter is broken. Fix a skipped skill in the repo, or tell
-Evan which one was skipped. Never add lead lists, emails or keys: skills hold instructions
-only.
+This zips each `gtme-*` folder into `<name>.skill`, with the folder at the root of the zip,
+and labels it:
+- **NEW:** not in Evan's account yet.
+- **CHANGED:** differs from his installed copy.
+- **SAME:** already current, so no file is made.
+- **SKIPPED:** broken frontmatter. Fix it in the repo, or tell Evan which skill was skipped.
+
+It compares against his account copies in `~/.claude/skills/synced/`. Where it can't see
+them (e.g. a claude.ai chat), every skill counts as NEW. Add `--all` when Evan wants every
+file regardless. Never add lead lists, emails or keys: skills hold instructions only.
 
 ## 3. Send them to Evan
 
-- Send all the `.skill` files in one SendUserFile call (`display: attach`).
+- Send the `.skill` files in one SendUserFile call (`display: attach`). If there are none,
+  say everything is already current and stop.
 - Tell him, in a few lines:
   - Click **Save skill** on each file to add it to his Claude account.
   - If there's no button, go to claude.ai → Customize → Skills → **+** → Create skill →
@@ -51,5 +58,5 @@ only.
 
 ## 4. Report
 
-One short list: each skill sent, the commit hash, and "Re-run gtme-sync-skills after any
-skill change."
+A short table: each skill, with NEW / CHANGED (upload) or SAME (nothing to do). Add the
+commit hash and "Re-run gtme-sync-skills after any skill change."
