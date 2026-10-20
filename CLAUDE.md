@@ -11,6 +11,7 @@ This repo supports Evan's go-to-market work (lead sourcing, enrichment, outreach
 ## Conventions
 - Workflows: n8n by default; each ships as importable JSON/code plus a setup checklist (credentials, triggers, test steps), with error handling, retries, and run logging.
 - n8n production workflows set `GTME – failure alerts` as their error workflow, and every Apify call carries a `maxTotalChargeUsd` hard cap agreed with Evan.
+- Jev (TypeSafe) makes semantic judgments only; numbers, dates, counts and lookups stay in code. One request per item with all its questions; thresholds, weights and tiers live in the client's config/ICP sheet; every scored row stores the probabilities, the reject reason and the `model` the response reports. Test a question set on a labelled sample before it goes into a workflow (`gtme-jev-scoring`).
 - Tool shortlist lives in `TOOLS.md`.
 
 ## Skills

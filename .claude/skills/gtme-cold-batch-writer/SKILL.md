@@ -19,12 +19,13 @@ Use when Evan says "write the batch", "draft emails for the send batch", or name
    - **Email 1 (day 0):** ≤90 words. Subject ≤5 words, lowercase, no clickbait. Line 1 = the specific detail. Then the problem (recruiters spend hours on BD instead of placing), the offer in one line (Flux runs outbound to hiring managers so their consultants only take booked calls), one soft CTA question ("worth a 15-min look?"). No links, no images, no attachments in email 1.
    - **Email 2 (day 3):** ≤50 words, reply in same thread, one new angle (e.g. pilot terms / what the first 21 days look like).
    - **Email 3 (day 7):** ≤35 words, polite breakup, offer to send a 1-page plan instead.
-4. Every email ends with this footer (Irish ePrivacy rules: sender identity must be clear and an opt-out offered in every B2B marketing email):
+4. Check the personalisation against its source before saving. For each Email 1, ask Jev whether every claim about the prospect's company in line 1 is stated in the page text from step 2 (`jev_verify` with the page as evidence, or the "personalisation is grounded" Noul in `gtme-jev-scoring`). Below 0.7, rewrite line 1 from the `title`/niche only, and list the prospect under "rewritten" in the reply. If no Jev tool is available, say the check was skipped.
+5. Every email ends with this footer (Irish ePrivacy rules: sender identity must be clear and an opt-out offered in every B2B marketing email):
    `Evan Wynne · Flux GTM · fluxgtm.com`
    `Not relevant? Reply "no" and I won't email again.`
-5. Plain text only. No spam-trigger words (free, guarantee, 100%, act now), no exclamation marks, max one question mark per email.
-6. Save **only Email 1** for each prospect as a Gmail draft from evan@fluxgtm.com (Gmail `create_draft`). Never send. Put emails 2 and 3 in a new Google Doc "Follow-ups <tab name>" in the Flux GTM folder, grouped by prospect, with the send-on date.
-7. Reply to Evan with: number of drafts created, skipped rows + reasons, and the reminder: "After sending, run n8n *Flux - mark contacted* with this tab name. Anyone who replies 'no' → add to flux_suppression."
+6. Plain text only. No spam-trigger words (free, guarantee, 100%, act now), no exclamation marks, max one question mark per email.
+7. Save **only Email 1** for each prospect as a Gmail draft from evan@fluxgtm.com (Gmail `create_draft`). Never send. Put emails 2 and 3 in a new Google Doc "Follow-ups <tab name>" in the Flux GTM folder, grouped by prospect, with the send-on date.
+8. Reply to Evan with: number of drafts created, skipped rows + reasons, rewritten first lines, and the reminder: "After sending, run n8n *Flux - mark contacted* with this tab name. Anyone who replies 'no' → add to flux_suppression."
 
 ## Guardrails
 - Max 20 drafts per run (protects the fluxgtm.com primary domain until a separate sending domain + warmed inboxes exist).
