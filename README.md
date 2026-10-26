@@ -23,6 +23,7 @@ packages them for Evan's claude.ai account.
 | `gtme-jev-scoring` | Turn an ICP into tested Jev questions plus weights, thresholds and tiers in code; score a list once |
 | `gtme-signal-pipeline` | Build a signal workflow in n8n: scrape (capped) → dedupe → Jev qualify → enrich passes → score → contacts |
 | `gtme-score-review` | Grade a scoring run, name the failure patterns, fix them and re-run on the same items |
+| `gtme-geo-visibility-audit` | Score how often a client is named in AI-search answers, list the site gaps, and scope a GEO add-on |
 | `gtme-cold-batch-writer` | Write 3-touch cold emails for a Flux send batch as Gmail drafts |
 | `gtme-n8n-oneoff` | One-time sheet fixes, backfills and tests through a throwaway n8n workflow |
 | `gtme-handoff` | Stop cleanly and hand Evan a context file for a new chat |
