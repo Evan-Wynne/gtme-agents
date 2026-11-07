@@ -5,112 +5,219 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>GTME Skills</title>
-<meta name="description" content="The Claude skills behind Flux GTM's lead sourcing, scoring and outreach.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6d5a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E">
+<meta name="description" content="The Claude skills that run Flux GTM's outbound: scoping, Jev scoring, signal pipelines, run reviews and cold email.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6d5a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0e0e10; --card: #18181b; --card-hover: #1f1f23; --text: #ededef; --muted: #9a9aa1;
-    --line: #2a2a2e; --accent: #ff6d5a; --chip: #232327;
-    --canvas: #1b1b1d; --dot: #34343a; --node: #2a2a2e; --node-line: #4a4a52; --edge: #6b6b73;
-    --trigger: #ff6d5a; --ai: #a78bfa; --data: #4ade80; --logic: #60a5fa; --action: #fbbf24; --output: #2dd4bf;
+    --bg: #0d0c0b;
+    --glass: rgba(255, 248, 240, 0.035);
+    --glass-2: rgba(255, 248, 240, 0.06);
+    --glass-3: rgba(255, 248, 240, 0.09);
+    --line: rgba(255, 248, 240, 0.08);
+    --line-2: rgba(255, 248, 240, 0.14);
+    --text: #f2efe9;
+    --muted: #a19b93;
+    --faint: #6f6a64;
+    --accent: #ff6d5a;
+    --accent-ink: #1a0d0a;
+    --edge: rgba(255, 248, 240, 0.22);
+    /* node kinds */
+    --trigger: #ff6d5a; --ai: #c4a7ff; --data: #7fd99a; --logic: #8ab4f8; --action: #f5c451; --output: #5fd4c4;
+    --sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    margin: 0; color: var(--text); font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1100px 520px at 70% -120px, rgba(255, 109, 90, 0.13), transparent 70%), /* slop-ok: the light the glass panels sit over */
+      var(--bg);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
-  a { color: inherit; }
-  main { max-width: 1100px; margin: 0 auto; padding: 56px 16px 80px; }
-  header h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
-  header p { color: var(--muted); margin: 0; max-width: 580px; }
-  h2 {
-    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--muted); margin: 44px 0 14px; font-weight: 600;
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  /* Glass: one recipe, used for nav, panels and cards */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); /* slop-ok: glass style requested */
+    box-shadow: inset 0 1px 0 rgba(255, 248, 240, 0.05);
   }
 
-  /* Overview cards */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
-  .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
-    display: flex; flex-direction: column; gap: 12px; text-decoration: none;
-    transition: background .15s, border-color .15s, transform .15s;
-  }
-  .card:hover { background: var(--card-hover); border-color: #3a3a40; transform: translateY(-2px); }
-  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .icon { width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center;
-    background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
-  .icon svg { width: 22px; height: 22px; }
-  .card h3 { margin: 0; font-size: 16px; }
-  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
-  .card p { margin: 0; color: var(--muted); font-size: 14px; }
-  .card .more { margin-top: auto; font-size: 13px; color: var(--accent); }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { background: var(--chip); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+  /* Nav */
+  nav { position: sticky; top: 0; z-index: 10; border-width: 0 0 1px; }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-mark { width: 26px; height: 26px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
+  .logo-mark svg { width: 15px; height: 15px; }
+  nav .links { display: flex; gap: 22px; margin-left: auto; font-size: 14px; color: var(--muted); }
+  nav .links a:hover { color: var(--text); }
 
-  /* Detail page */
-  .back { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); text-decoration: none; font-size: 14px; }
-  .back:hover { color: var(--text); }
-  .detail-head { display: flex; gap: 16px; align-items: flex-start; margin: 24px 0 8px; }
-  .detail-head .icon { width: 56px; height: 56px; border-radius: 14px; flex: none; }
-  .detail-head .icon svg { width: 28px; height: 28px; }
-  .detail-head h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
-  .detail-summary { color: var(--muted); max-width: 700px; margin: 12px 0 14px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 8px;
+    font-size: 14px; font-weight: 500; transition: background .15s, border-color .15s, color .15s; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: #ff8574; }
+  .btn-ghost { border: 1px solid var(--line-2); color: var(--text); background: var(--glass); }
+  .btn-ghost:hover { background: var(--glass-2); border-color: rgba(255, 248, 240, 0.22); }
+  .btn svg { width: 16px; height: 16px; }
 
+  /* Hero */
+  .hero { padding: 88px 0 40px; }
+  .hero h1 { font-size: clamp(40px, 6vw, 72px); line-height: 1.02; letter-spacing: -0.045em; font-weight: 600; margin: 0; max-width: 820px; }
+  .hero p { font-size: 18px; color: var(--muted); max-width: 600px; margin: 22px 0 30px; }
+  .hero .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-canvas { margin-top: 56px; }
+  .canvas-bar { white-space: nowrap; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .canvas-bar .dots { display: flex; gap: 6px; }
+  .canvas-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--glass-3); }
+  .canvas-bar .name { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+  .canvas-bar .status { margin-left: auto; display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+  .canvas-bar .status svg { width: 14px; height: 14px; color: var(--data); }
+
+  /* Canvas + nodes (shared by hero and detail) */
+  .panel { border-radius: 12px; overflow: hidden; }
   .canvas {
-    margin-top: 28px; border: 1px solid var(--line); border-radius: 16px; overflow-x: auto;
-    background-color: var(--canvas);
-    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
-    background-size: 20px 20px;
+    overflow-x: auto; scrollbar-width: thin;
+    background-image: radial-gradient(rgba(255, 248, 240, 0.09) 1px, transparent 1px);
+    background-size: 22px 22px;
   }
-  .flow { display: flex; align-items: flex-start; padding: 56px 40px 40px; width: max-content; margin: 0 auto; }
-  .node { width: 112px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: default; }
+  .flow { position: relative; display: flex; align-items: flex-start; padding: 52px 48px 40px; width: max-content; margin: 0 auto; }
+  .node { position: relative; z-index: 1; width: 124px; display: flex; flex-direction: column; align-items: center; text-align: center; }
   .box {
-    position: relative; width: 84px; height: 84px; border-radius: 10px; display: grid; place-items: center;
-    background: var(--node); border: 2px solid var(--node-line); color: var(--c);
-    transition: border-color .15s, box-shadow .15s;
+    position: relative; width: 88px; height: 88px; border-radius: 12px; display: grid; place-items: center;
+    background: rgba(28, 26, 24, 0.72); border: 1px solid var(--line-2); color: var(--c);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); /* slop-ok: glass style requested */
+    box-shadow: inset 0 1px 0 rgba(255, 248, 240, 0.06), 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: border-color .15s, background .15s;
   }
-  .node.trigger .box { border-radius: 42px 10px 10px 42px; }
-  .node:hover .box, .node.active .box { border-color: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent); }
-  .box svg { width: 34px; height: 34px; }
-  .box .port { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--edge); top: 50%; margin-top: -5px; }
-  .box .in { left: -6px; } .box .out { right: -6px; }
-  .node.trigger .in, .node:last-child .out { display: none; }
-  .node .label { margin-top: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; }
-  .node .sub { margin-top: 2px; font-size: 11.5px; color: var(--muted); line-height: 1.3; }
-  .edge { flex: none; width: 44px; height: 84px; position: relative; margin: 0 -14px; z-index: 0; }
-  .edge::before { content: ""; position: absolute; left: 0; right: 8px; top: 41px; height: 2px; background: var(--edge); }
-  .edge::after { content: ""; position: absolute; right: 2px; top: 37px; border: 5px solid transparent; border-left: 7px solid var(--edge); }
-  .node { position: relative; z-index: 1; }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 2px 0; font-size: 12px; color: var(--muted); }
-  .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
-
-  .steps { margin: 36px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 760px; }
-  .steps li {
-    display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px; transition: border-color .15s;
+  .box::after { /* colour wash in the node's kind colour */
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(60px 60px at 50% 30%, color-mix(in srgb, var(--c) 16%, transparent), transparent); /* slop-ok: node tint */
+    pointer-events: none;
   }
-  .steps li.active { border-color: var(--c); }
-  .steps .n { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-size: 13px; font-weight: 600;
-    background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); }
-  .steps b { display: block; font-size: 14px; }
-  .steps p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
-  .source { margin-top: 28px; font-size: 13px; color: var(--muted); }
-  .source a { color: var(--accent); }
+  .node.trigger .box { border-radius: 44px 12px 12px 44px; } /* slop-ok: n8n trigger shape */
+  a.node:hover .box, .node.active .box { border-color: color-mix(in srgb, var(--c) 70%, transparent); background: rgba(36, 33, 30, 0.85); }
+  .box svg { width: 34px; height: 34px; position: relative; z-index: 1; }
+  .port { position: absolute; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: #2a2724; border: 1.5px solid var(--edge); top: 50%; margin-top: -4.5px; }
+  .port.in { left: -5px; } .port.out { right: -5px; }
+  .node.trigger .port.in, .node.last .port.out { display: none; }
+  .node .label { margin-top: 12px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+  .node .sub { margin-top: 3px; font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .edge { flex: none; position: relative; width: 52px; height: 88px; margin: 0 -18px; }
+  .edge::before { content: ""; position: absolute; left: 0; right: 0; top: 43.5px; height: 1.5px; background: var(--edge); }
+  .edge .pulse { position: absolute; top: 41px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    .animate .edge .pulse { animation: travel 4s linear infinite; animation-delay: calc(var(--i) * 0.8s); }
+  }
+  @keyframes travel { 0% { left: 0; opacity: 0; } 5% { opacity: 1; } 18% { left: calc(100% - 6px); opacity: 1; } 22%, 100% { left: calc(100% - 6px); opacity: 0; } }
 
-  footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
-  footer a { color: var(--accent); }
+  /* Skills grid */
+  section { padding: 72px 0 0; }
+  .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+  .section-head h2 { font-size: 32px; letter-spacing: -0.035em; font-weight: 600; margin: 0; }
+  .section-head p { margin: 0; color: var(--muted); max-width: 420px; font-size: 15px; }
+  .group { margin-top: 34px; }
+  .group h3 { font-size: 15px; font-weight: 500; color: var(--muted); margin: 0 0 12px; display: flex; gap: 8px; }
+  .group h3 span { color: var(--faint); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .card { border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; transition: background .15s, border-color .15s; }
+  .card:hover { background: var(--glass-2); border-color: var(--line-2); }
+  .card-top { display: flex; align-items: center; gap: 12px; }
+  .icon { width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center; flex: none;
+    background: var(--glass-2); border: 1px solid var(--line); color: var(--text); }
+  .icon svg { width: 19px; height: 19px; }
+  .card h4 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+  .mono { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+  .card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--faint); }
+  .kinds { display: flex; gap: 4px; }
+  .kinds i { width: 7px; height: 7px; border-radius: 2px; background: var(--c); opacity: .85; }
+  .card .open { color: var(--muted); transition: color .15s; }
+  .card:hover .open { color: var(--accent); }
+
+  /* Detail */
+  .crumbs { padding-top: 40px; font-size: 14px; color: var(--muted); display: flex; gap: 8px; }
+  .crumbs a:hover { color: var(--text); }
+  .detail-head { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; margin: 28px 0 0; }
+  .detail-head h1 { margin: 0; font-size: clamp(36px, 5vw, 56px); letter-spacing: -0.045em; line-height: 1.04; font-weight: 600; }
+  .detail-head .mono { display: block; margin-top: 10px; font-size: 13px; }
+  .detail-summary { color: var(--muted); max-width: 680px; font-size: 18px; margin: 18px 0 0; }
+  .say { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 22px; font-size: 13px; color: var(--faint); }
+  .say span { font-family: var(--mono); font-size: 12.5px; color: var(--text); padding: 5px 10px; border-radius: 6px; background: var(--glass-2); border: 1px solid var(--line); }
+  .detail-canvas { margin-top: 36px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+
+  .steps-wrap { display: grid; grid-template-columns: 260px 1fr; gap: 48px; margin-top: 64px; }
+  .steps-wrap h2 { font-size: 24px; letter-spacing: -0.03em; font-weight: 600; margin: 0 0 8px; }
+  .steps-wrap aside p { color: var(--muted); font-size: 14.5px; margin: 0 0 16px; }
+  .steps { list-style: none; margin: 0; padding: 0; position: relative; }
+  .steps::before { content: ""; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 1px; background: var(--line-2); }
+  .steps li { position: relative; display: grid; grid-template-columns: 32px 1fr; gap: 18px; padding: 10px 0; }
+  .steps .n { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center;
+    font: 500 13px var(--mono); color: var(--c); background: #1a1816; border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+  .steps .body { padding: 14px 16px; border-radius: 10px; transition: background .15s, border-color .15s; }
+  .steps li.active .body { background: var(--glass-2); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+  .steps b { display: flex; gap: 10px; align-items: baseline; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .steps b em { font-style: normal; font: 12px var(--mono); color: var(--faint); font-weight: 400; }
+  .steps p { margin: 4px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 72px; }
+  .pager a { border-radius: 12px; padding: 18px 20px; transition: background .15s, border-color .15s; }
+  .pager a:hover { background: var(--glass-2); border-color: var(--line-2); }
+  .pager .dir { display: block; font-size: 13px; color: var(--faint); margin-bottom: 4px; }
+  .pager strong { font-weight: 600; letter-spacing: -0.015em; }
+  .pager .next { text-align: right; }
+
+  footer { margin-top: 96px; border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; padding-top: 24px; padding-bottom: 40px; font-size: 13.5px; color: var(--faint); flex-wrap: wrap; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 760px) {
+    .hero { padding-top: 56px; }
+    nav .links a.hide-sm { display: none; }
+    .section-head { flex-direction: column; align-items: flex-start; }
+    .detail-head { grid-template-columns: 1fr; }
+    .steps-wrap { grid-template-columns: 1fr; gap: 16px; }
+    .flow { padding: 44px 28px 32px; }
+    .grid { grid-template-columns: 1fr; }
+    .pager { grid-template-columns: 1fr; }
+    .canvas-bar .status { display: none; }
+  }
 </style>
 </head>
 <body>
+<nav class="glass">
+  <div class="wrap">
+    <a class="logo" href="#"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>gtme-agents</a>
+    <div class="links">
+      <a href="#" data-to="skills">Skills</a>
+      <a class="hide-sm" href="https://fluxgtm.com">Flux GTM</a>
+      <a href="https://github.com/Evan-Wynne/gtme-agents">GitHub</a>
+    </div>
+  </div>
+</nav>
 <main id="app"></main>
+<footer>
+  <div class="wrap">
+    <span>Generated from <span class="mono">.claude/skills</span> on every deploy.</span>
+    <a href="https://github.com/Evan-Wynne/gtme-agents">github.com/Evan-Wynne/gtme-agents</a>
+  </div>
+</footer>
 
 <script src="skills.js"></script>
 <script src="flows.js"></script>
 <script>
   const REPO = "https://github.com/Evan-Wynne/gtme-agents";
-  // Simple line icons on a 24px grid
   const ICONS = {
     clipboard: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
@@ -146,6 +253,8 @@
     git: '<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 8v8M18 11c0 4-6 3-11.5 6"/>',
     send: '<path d="M21 3L3 10l7 3 3 7z"/><path d="M10 13l11-10"/>',
     zip: '<path d="M6 3h8l4 4v14H6z"/><path d="M11 3v2h2v2h-2v2h2v2h-2v2"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    github: '<path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/>',
     box: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6M12 9v6"/>',
   };
   const SKILL_ICON = {
@@ -159,71 +268,136 @@
     ["Reach out", ["gtme-cold-batch-writer"]],
     ["Utilities", ["gtme-n8n-oneoff", "gtme-handoff", "gtme-sync-skills"]],
   ];
+  // The hero canvas: how the main skills chain together for a new client
+  const PIPELINE = [
+    ["gtme-leadflow-intake", "trigger", "Intake", "scope the client"],
+    ["gtme-jev-scoring", "ai", "Jev scoring", "tested questions"],
+    ["gtme-signal-pipeline", "action", "Signal pipeline", "n8n + Apify"],
+    ["gtme-score-review", "logic", "Score review", "grade + fix"],
+    ["gtme-cold-batch-writer", "output", "Cold emails", "Gmail drafts"],
+  ];
   const KINDS = { trigger: "Trigger", ai: "AI judgment", data: "Read data", logic: "Logic", action: "Action", output: "Output" };
 
   const skills = window.SKILLS || [];
   const flows = window.FLOWS || {};
   const app = document.getElementById("app");
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const svg = (key, w = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}"
+  const svg = (key, w = 1.7) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}"
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[key] || ICONS.box}</svg>`;
   const title = (name) => name.replace(/^gtme-/, "").split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ")
     .replace(/\bGeo\b/, "GEO").replace(/\bN8n\b/, "n8n");
-  const chips = (s) => s.triggers.length
-    ? `<div class="chips">${s.triggers.map((t) => `<span class="chip">"${esc(t)}"</span>`).join("")}</div>` : "";
+  const stepsOf = (s) => flows[s.name] || [
+    { kind: "trigger", icon: "chat", label: "Ask Claude", sub: s.triggers[0] || "", note: "No diagram yet: add one in site/flows.js." },
+    { kind: "output", icon: SKILL_ICON[s.name] || "box", label: title(s.name), sub: s.name, note: s.summary }];
 
-  function overview() {
+  // One node + its incoming edge. `href` makes it clickable.
+  const nodeHTML = (n, i, total, href) => `${i ? `<div class="edge" style="--i:${i - 1}"><span class="pulse"></span></div>` : ""}
+    <${href ? `a href="${href}"` : "div"} class="node ${n.kind}${i === total - 1 ? " last" : ""}" data-i="${i}" style="--c: var(--${n.kind})">
+      <div class="box"><span class="port in"></span>${svg(n.icon, 1.6)}<span class="port out"></span></div>
+      <div class="label">${esc(n.label)}</div>
+      <div class="sub">${esc(n.sub || "")}</div>
+    </${href ? "a" : "div"}>`;
+
+  function overview(scrollTo) {
     document.title = "GTME Skills";
     const placed = new Set(GROUPS.flatMap(([, n]) => n));
     const groups = [...GROUPS, ["Other", skills.filter((s) => !placed.has(s.name)).map((s) => s.name)]];
+    const pipeline = PIPELINE.filter(([name]) => skills.some((s) => s.name === name));
     app.innerHTML = `
-      <header>
-        <h1>GTME Skills</h1>
-        <p>The Claude skills behind Flux GTM: scoping a client, scoring leads, building signal
-          workflows and writing outreach. Click a skill to see what it does, step by step.</p>
-      </header>
-      ${groups.map(([label, names]) => {
-        const items = names.map((n) => skills.find((s) => s.name === n)).filter(Boolean);
-        return items.length ? `<h2>${esc(label)}</h2><div class="grid">${items.map((s) => `
-          <a class="card" href="#${esc(s.name)}">
-            <div class="icon">${svg(SKILL_ICON[s.name])}</div>
-            <div><h3>${esc(title(s.name))}</h3><code>${esc(s.name)}</code></div>
-            <p>${esc(s.summary)}</p>
-            ${chips(s)}
-            <span class="more">See the flow →</span>
-          </a>`).join("")}</div>` : "";
-      }).join("")}
-      <footer>Built from <code>.claude/skills</code> in <a href="${REPO}">gtme-agents</a>.</footer>`;
+      <div class="wrap">
+        <header class="hero">
+          <h1>${skills.length} Claude skills that run Flux GTM's outbound.</h1>
+          <p>From scoping a new client to scoring leads with Jev, building signal pipelines in n8n
+            and drafting cold email. Each one is a playbook Claude follows step by step.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#" data-to="skills">Browse the skills ${svg("arrow", 2)}</a>
+            <a class="btn btn-ghost" href="${REPO}">${svg("github", 1.8)} View the repo</a>
+          </div>
+          <div class="hero-canvas panel glass">
+            <div class="canvas-bar">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="name">new-client.workflow</span>
+              <span class="status">${svg("check", 2)} ${pipeline.length} skills chained</span>
+            </div>
+            <div class="canvas animate"><div class="flow">
+              ${pipeline.map(([name, kind, label, sub], i) =>
+                nodeHTML({ kind, icon: SKILL_ICON[name], label, sub }, i, pipeline.length, `#${name}`)).join("")}
+            </div></div>
+          </div>
+        </header>
+
+        <section id="skills">
+          <div class="section-head">
+            <h2>Every skill</h2>
+            <p>Open one to see its flow: what triggers it, what it reads, where AI judges, and what it hands back.</p>
+          </div>
+          ${groups.map(([label, names]) => {
+            const items = names.map((n) => skills.find((s) => s.name === n)).filter(Boolean);
+            return items.length ? `<div class="group"><h3>${esc(label)} <span>${items.length}</span></h3><div class="grid">${items.map((s) => {
+              const st = stepsOf(s);
+              return `<a class="card glass" href="#${esc(s.name)}">
+                <div class="card-top">
+                  <div class="icon">${svg(SKILL_ICON[s.name])}</div>
+                  <div><h4>${esc(title(s.name))}</h4><div class="mono">${esc(s.name)}</div></div>
+                </div>
+                <p>${esc(s.summary)}</p>
+                <div class="card-foot">
+                  <span class="kinds">${st.map((n) => `<i style="--c: var(--${n.kind})" title="${esc(n.label)}"></i>`).join("")}</span>
+                  <span class="open">${st.length} steps →</span>
+                </div>
+              </a>`;
+            }).join("")}</div></div>` : "";
+          }).join("")}
+        </section>
+      </div>`;
+    if (scrollTo) document.getElementById(scrollTo)?.scrollIntoView();
   }
 
   function detail(s) {
     document.title = title(s.name) + " · GTME Skills";
-    const steps = flows[s.name] || [{ kind: "trigger", icon: "chat", label: "Ask Claude", sub: s.triggers[0] || "", note: "No diagram yet: add one in site/flows.js." },
-      { kind: "output", icon: SKILL_ICON[s.name] || "box", label: title(s.name), sub: s.name, note: s.summary }];
+    const steps = stepsOf(s);
     const used = [...new Set(steps.map((n) => n.kind))];
+    const order = GROUPS.flatMap(([, n]) => n).filter((n) => skills.some((x) => x.name === n));
+    skills.forEach((x) => order.includes(x.name) || order.push(x.name));
+    const at = order.indexOf(s.name);
+    const prev = order[(at - 1 + order.length) % order.length];
+    const next = order[(at + 1) % order.length];
     app.innerHTML = `
-      <a class="back" href="#">← All skills</a>
-      <div class="detail-head">
-        <div class="icon">${svg(SKILL_ICON[s.name])}</div>
-        <div><h1>${esc(title(s.name))}</h1><code>${esc(s.name)}</code></div>
-      </div>
-      <p class="detail-summary">${esc(s.summary)}</p>
-      ${chips(s)}
-      <div class="canvas"><div class="flow">
-        ${steps.map((n, i) => `${i ? '<div class="edge"></div>' : ""}
-          <div class="node ${n.kind}" data-i="${i}" style="--c: var(--${n.kind})" title="${esc(n.note || "")}">
-            <div class="box"><span class="port in"></span>${svg(n.icon, 1.6)}<span class="port out"></span></div>
-            <div class="label">${esc(n.label)}</div>
-            <div class="sub">${esc(n.sub || "")}</div>
-          </div>`).join("")}
-      </div></div>
-      <div class="legend">${used.map((k) => `<span><i style="--c: var(--${k})"></i>${KINDS[k]}</span>`).join("")}</div>
-      <ol class="steps">${steps.map((n, i) => `
-        <li data-i="${i}" style="--c: var(--${n.kind})"><span class="n">${i + 1}</span>
-          <div><b>${esc(n.label)}</b><p>${esc(n.note || n.sub || "")}</p></div></li>`).join("")}
-      </ol>
-      <p class="source">Full instructions: <a href="${REPO}/blob/main/.claude/skills/${esc(s.name)}/SKILL.md">SKILL.md on GitHub</a></p>`;
-    // Hovering a node highlights its step, and the other way round
+      <div class="wrap">
+        <div class="crumbs"><a href="#" data-to="skills">Skills</a><span>/</span><span>${esc(title(s.name))}</span></div>
+        <div class="detail-head">
+          <div>
+            <h1>${esc(title(s.name))}</h1>
+            <span class="mono">${esc(s.name)}</span>
+          </div>
+          <a class="btn btn-ghost" href="${REPO}/blob/main/.claude/skills/${esc(s.name)}/SKILL.md">${svg("doc", 1.8)} Read SKILL.md</a>
+        </div>
+        <p class="detail-summary">${esc(s.summary)}</p>
+        ${s.triggers.length ? `<div class="say">Say ${s.triggers.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+
+        <div class="detail-canvas panel glass">
+          <div class="canvas-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="name">${esc(s.name)}.workflow</span>
+            <span class="status">${steps.length} steps</span>
+          </div>
+          <div class="canvas"><div class="flow">${steps.map((n, i) => nodeHTML(n, i, steps.length)).join("")}</div></div>
+          <div class="legend">${used.map((k) => `<span><i style="--c: var(--${k})"></i>${KINDS[k]}</span>`).join("")}</div>
+        </div>
+
+        <div class="steps-wrap">
+          <aside><h2>Step by step</h2><p>Hover a step to find it on the canvas.</p></aside>
+          <ol class="steps">${steps.map((n, i) => `
+            <li data-i="${i}" style="--c: var(--${n.kind})"><span class="n">${i + 1}</span>
+              <div class="body glass"><b>${esc(n.label)} <em>${esc(n.sub || "")}</em></b><p>${esc(n.note || "")}</p></div></li>`).join("")}
+          </ol>
+        </div>
+
+        <div class="pager">
+          <a class="glass" href="#${prev}"><span class="dir">← Previous</span><strong>${esc(title(prev))}</strong></a>
+          <a class="glass next" href="#${next}"><span class="dir">Next →</span><strong>${esc(title(next))}</strong></a>
+        </div>
+      </div>`;
     const pair = (i, on) => app.querySelectorAll(`[data-i="${i}"]`).forEach((el) => el.classList.toggle("active", on));
     app.querySelectorAll("[data-i]").forEach((el) => {
       el.addEventListener("mouseenter", () => pair(el.dataset.i, true));
@@ -234,9 +408,16 @@
   function route() {
     const name = decodeURIComponent(location.hash.slice(1));
     const s = skills.find((x) => x.name === name);
-    s ? detail(s) : overview();
-    window.scrollTo(0, 0);
+    if (s) { detail(s); window.scrollTo(0, 0); } else { overview(); window.scrollTo(0, 0); }
   }
+  // "Skills" links: go to the overview and scroll to the grid
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-to]");
+    if (!a) return;
+    e.preventDefault();
+    if (location.hash && location.hash !== "#") { history.pushState(null, "", location.pathname); overview(); }
+    document.getElementById(a.dataset.to)?.scrollIntoView({ behavior: "smooth" });
+  });
   window.addEventListener("hashchange", route);
   route();
 </script>
