@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <title>GTME Skills</title>
-<meta name="description" content="The Claude skills that run Flux GTM's outbound: scoping, Jev scoring, signal pipelines, run reviews and cold email.">
+<meta name="description" content="Evan Wynne's Claude skills for outbound: scoping, Jev scoring, signal pipelines, run reviews and cold email.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6d5a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -181,6 +181,7 @@
   footer { margin-top: 96px; border-top: 1px solid var(--line); }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; padding-top: 24px; padding-bottom: 40px; font-size: 13.5px; color: var(--faint); flex-wrap: wrap; }
   footer a:hover { color: var(--text); }
+  footer .owner { color: var(--muted); }
 
   @media (max-width: 760px) {
     .hero { padding-top: 56px; }
@@ -201,7 +202,6 @@
     <a class="logo" href="#"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>gtme-agents</a>
     <div class="links">
       <a href="#" data-to="skills">Skills</a>
-      <a class="hide-sm" href="https://fluxgtm.com">Flux GTM</a>
       <a href="https://github.com/Evan-Wynne/gtme-agents">GitHub</a>
     </div>
   </div>
@@ -209,7 +209,7 @@
 <main id="app"></main>
 <footer>
   <div class="wrap">
-    <span>Generated from <span class="mono">.claude/skills</span> on every deploy.</span>
+    <span>Skills by <a class="owner" href="https://evanwynne.com">Evan Wynne</a>, founder of <a class="owner" href="https://fluxgtm.com">fluxgtm.com</a></span>
     <a href="https://github.com/Evan-Wynne/gtme-agents">github.com/Evan-Wynne/gtme-agents</a>
   </div>
 </footer>
@@ -278,7 +278,10 @@
   ];
   const KINDS = { trigger: "Trigger", ai: "AI judgment", data: "Read data", logic: "Logic", action: "Action", output: "Output" };
 
-  const skills = window.SKILLS || [];
+  const SUMMARY = {
+    "gtme-cold-batch-writer": "Turn a send batch from a prospects sheet into personalised, compliant 3-touch cold emails.",
+  };
+  const skills = (window.SKILLS || []).map((s) => ({ ...s, summary: SUMMARY[s.name] || s.summary }));
   const flows = window.FLOWS || {};
   const app = document.getElementById("app");
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -306,9 +309,9 @@
     app.innerHTML = `
       <div class="wrap">
         <header class="hero">
-          <h1>${skills.length} Claude skills that run Flux GTM's outbound.</h1>
-          <p>From scoping a new client to scoring leads with Jev, building signal pipelines in n8n
-            and drafting cold email. Each one is a playbook Claude follows step by step.</p>
+          <h1>${skills.length} Claude skills for outbound, from first call to first email.</h1>
+          <p>Scoping a new client, scoring leads with Jev, building signal pipelines in n8n and
+            drafting cold email. Each one is a playbook Claude follows step by step.</p>
           <div class="actions">
             <a class="btn btn-primary" href="#" data-to="skills">Browse the skills ${svg("arrow", 2)}</a>
             <a class="btn btn-ghost" href="${REPO}">${svg("github", 1.8)} View the repo</a>

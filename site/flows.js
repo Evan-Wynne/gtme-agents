@@ -49,7 +49,7 @@ window.FLOWS = {
   ],
   "gtme-cold-batch-writer": [
     { kind: "trigger", icon: "chat", label: "Write the batch", sub: "\"draft emails for the send batch\"", note: "Uses the newest Send batch tab unless Evan names one." },
-    { kind: "data", icon: "sheet", label: "Read batch tab", sub: "Flux Prospects", note: "Skip rows with verify score under 80, a blank email or a mismatched domain." },
+    { kind: "data", icon: "sheet", label: "Read batch tab", sub: "prospects sheet", note: "Skip rows with verify score under 80, a blank email or a mismatched domain." },
     { kind: "action", icon: "globe", label: "Research", sub: "one pass per company", note: "One specific, verifiable detail from the website. Never invent facts." },
     { kind: "ai", icon: "pen", label: "Write 3 emails", sub: "day 0 · 3 · 7", note: "Plain text, short, one soft CTA, ePrivacy footer on every email." },
     { kind: "ai", icon: "sparkle", label: "Jev ground check", sub: "first line vs source", note: "Below 0.7, rewrite the first line from the title or niche only." },
