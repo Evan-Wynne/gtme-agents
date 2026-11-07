@@ -34,15 +34,16 @@ New client, in order: intake → jev-scoring (design and test) → signal-pipeli
 
 ## Skills site
 
-`site/` is a one-page overview of the skills: an icon, a one-line summary and the trigger
-phrases for each. `scripts/build-site.mjs` reads every `.claude/skills/*/SKILL.md` and writes
+`site/` is a dark one-page overview of the skills: an icon, a one-line summary and the
+trigger phrases for each. Clicking a skill opens an n8n-style flow of its steps, drawn from
+`site/flows.js` (hand-written; update it when a skill's steps change). `scripts/build-site.mjs` reads every `.claude/skills/*/SKILL.md` and writes
 `site/skills.js`, so a new skill appears on the next deploy.
 
 - **Vercel:** import the repo; `vercel.json` already sets the build command and the `site`
   output folder. No framework, no dependencies.
 - **Locally:** `node scripts/build-site.mjs`, then open `site/index.html`.
-- **New skill:** it lands under "Other" with a default icon until it gets an entry in
-  `ICONS` and `GROUPS` in `site/index.html`.
+- **New skill:** it lands under "Other" with a default icon and a placeholder flow until it
+  gets entries in `SKILL_ICON` and `GROUPS` in `site/index.html` and a flow in `site/flows.js`.
 
 ## Data & GDPR
 

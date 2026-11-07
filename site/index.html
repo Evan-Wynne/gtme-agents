@@ -3,77 +3,155 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>GTME Skills</title>
 <meta name="description" content="The Claude skills behind Flux GTM's lead sourcing, scoring and outreach.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6d5a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E">
 <style>
   :root {
-    --bg: #f7f7f5; --card: #ffffff; --text: #1c1c1e; --muted: #6b6b70;
-    --line: #e6e6e2; --accent: #4f46e5; --accent-soft: #eef0ff; --chip: #f1f1ee;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #111113; --card: #1a1a1d; --text: #ededef; --muted: #9a9aa1;
-      --line: #2a2a2e; --accent: #8b8cf8; --accent-soft: #23234a; --chip: #232327;
-    }
+    --bg: #0e0e10; --card: #18181b; --card-hover: #1f1f23; --text: #ededef; --muted: #9a9aa1;
+    --line: #2a2a2e; --accent: #ff6d5a; --chip: #232327;
+    --canvas: #1b1b1d; --dot: #34343a; --node: #2a2a2e; --node-line: #4a4a52; --edge: #6b6b73;
+    --trigger: #ff6d5a; --ai: #a78bfa; --data: #4ade80; --logic: #60a5fa; --action: #fbbf24; --output: #2dd4bf;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
   }
-  main { max-width: 1040px; margin: 0 auto; padding: 56px 16px 80px; }
+  a { color: inherit; }
+  main { max-width: 1100px; margin: 0 auto; padding: 56px 16px 80px; }
   header h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
-  header p { color: var(--muted); margin: 0; max-width: 560px; }
+  header p { color: var(--muted); margin: 0; max-width: 580px; }
   h2 {
     font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--muted); margin: 44px 0 14px; font-weight: 600;
   }
+
+  /* Overview cards */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
   .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 20px; display: flex; flex-direction: column; gap: 12px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px; text-decoration: none;
+    transition: background .15s, border-color .15s, transform .15s;
   }
-  .icon {
-    width: 44px; height: 44px; border-radius: 11px; background: var(--accent-soft);
-    color: var(--accent); display: grid; place-items: center;
-  }
+  .card:hover { background: var(--card-hover); border-color: #3a3a40; transform: translateY(-2px); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .icon { width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
   .icon svg { width: 22px; height: 22px; }
   .card h3 { margin: 0; font-size: 16px; }
-  .card code { font-size: 12px; color: var(--muted); }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
   .card p { margin: 0; color: var(--muted); font-size: 14px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .card .more { margin-top: auto; font-size: 13px; color: var(--accent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { background: var(--chip); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+
+  /* Detail page */
+  .back { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--text); }
+  .detail-head { display: flex; gap: 16px; align-items: flex-start; margin: 24px 0 8px; }
+  .detail-head .icon { width: 56px; height: 56px; border-radius: 14px; flex: none; }
+  .detail-head .icon svg { width: 28px; height: 28px; }
+  .detail-head h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
+  .detail-summary { color: var(--muted); max-width: 700px; margin: 12px 0 14px; }
+
+  .canvas {
+    margin-top: 28px; border: 1px solid var(--line); border-radius: 16px; overflow-x: auto;
+    background-color: var(--canvas);
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .flow { display: flex; align-items: flex-start; padding: 56px 40px 40px; width: max-content; margin: 0 auto; }
+  .node { width: 112px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: default; }
+  .box {
+    position: relative; width: 84px; height: 84px; border-radius: 10px; display: grid; place-items: center;
+    background: var(--node); border: 2px solid var(--node-line); color: var(--c);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .node.trigger .box { border-radius: 42px 10px 10px 42px; }
+  .node:hover .box, .node.active .box { border-color: var(--c); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent); }
+  .box svg { width: 34px; height: 34px; }
+  .box .port { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--edge); top: 50%; margin-top: -5px; }
+  .box .in { left: -6px; } .box .out { right: -6px; }
+  .node.trigger .in, .node:last-child .out { display: none; }
+  .node .label { margin-top: 10px; font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .node .sub { margin-top: 2px; font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+  .edge { flex: none; width: 44px; height: 84px; position: relative; margin: 0 -14px; z-index: 0; }
+  .edge::before { content: ""; position: absolute; left: 0; right: 8px; top: 41px; height: 2px; background: var(--edge); }
+  .edge::after { content: ""; position: absolute; right: 2px; top: 37px; border: 5px solid transparent; border-left: 7px solid var(--edge); }
+  .node { position: relative; z-index: 1; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 2px 0; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+
+  .steps { margin: 36px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 760px; }
+  .steps li {
+    display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; transition: border-color .15s;
+  }
+  .steps li.active { border-color: var(--c); }
+  .steps .n { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font-size: 13px; font-weight: 600;
+    background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); }
+  .steps b { display: block; font-size: 14px; }
+  .steps p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .source { margin-top: 28px; font-size: 13px; color: var(--muted); }
+  .source a { color: var(--accent); }
+
   footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
   footer a { color: var(--accent); }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>GTME Skills</h1>
-    <p>The Claude skills behind Flux GTM: scoping a client, scoring leads, building signal
-      workflows and writing outreach.</p>
-  </header>
-  <div id="groups"></div>
-  <footer>Built from <code>.claude/skills</code> in
-    <a href="https://github.com/Evan-Wynne/gtme-agents">gtme-agents</a>. Add a skill and this page updates on the next deploy.</footer>
-</main>
+<main id="app"></main>
 
 <script src="skills.js"></script>
+<script src="flows.js"></script>
 <script>
-  // Simple line icons (24px grid). Skills without an entry get the default.
+  const REPO = "https://github.com/Evan-Wynne/gtme-agents";
+  // Simple line icons on a 24px grid
   const ICONS = {
-    "gtme-leadflow-intake": '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
-    "gtme-geo-visibility-audit": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
-    "gtme-jev-scoring": '<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><circle cx="12" cy="18" r="1"/>',
-    "gtme-signal-pipeline": '<circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/>',
-    "gtme-score-review": '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20M8 10.5l2 2 3.5-3.5"/>',
-    "gtme-cold-batch-writer": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
-    "gtme-n8n-oneoff": '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
-    "gtme-handoff": '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
-    "gtme-sync-skills": '<path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>',
-    default: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6M12 9v6"/>',
+    clipboard: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    gauge: '<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><circle cx="12" cy="18" r="1"/>',
+    radar: '<circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/>',
+    review: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20M8 10.5l2 2 3.5-3.5"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+    bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+    handoff: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    refresh: '<path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+    form: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',
+    inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+    doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+    dollar: '<path d="M12 3v18M16 7.5c0-1.4-1.8-2.5-4-2.5s-4 1.1-4 2.5S9.8 10 12 10.5s4 1.1 4 2.5-1.8 2.5-4 2.5-4-1.1-4-2.5"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',
+    list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M16 16l4.5 4.5"/>',
+    filter: '<path d="M3 5h18l-7 8v6l-4 2v-8z"/>',
+    sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+    flask: '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/>',
+    code: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    cloud: '<path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/><path d="M12 11v6M9.5 14.5L12 17l2.5-2.5"/>',
+    building: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    sheet: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/>',
+    chart: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/>',
+    pen: '<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
+    play: '<path d="M7 4l13 8-13 8z"/>',
+    archive: '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v11h14V9M10 13h4"/>',
+    pause: '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
+    git: '<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 8v8M18 11c0 4-6 3-11.5 6"/>',
+    send: '<path d="M21 3L3 10l7 3 3 7z"/><path d="M10 13l11-10"/>',
+    zip: '<path d="M6 3h8l4 4v14H6z"/><path d="M11 3v2h2v2h-2v2h2v2h-2v2"/>',
+    box: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6M12 9v6"/>',
+  };
+  const SKILL_ICON = {
+    "gtme-leadflow-intake": "clipboard", "gtme-geo-visibility-audit": "globe", "gtme-jev-scoring": "gauge",
+    "gtme-signal-pipeline": "radar", "gtme-score-review": "review", "gtme-cold-batch-writer": "mail",
+    "gtme-n8n-oneoff": "bolt", "gtme-handoff": "handoff", "gtme-sync-skills": "refresh",
   };
   const GROUPS = [
     ["Scope a client", ["gtme-leadflow-intake", "gtme-geo-visibility-audit"]],
@@ -81,28 +159,86 @@
     ["Reach out", ["gtme-cold-batch-writer"]],
     ["Utilities", ["gtme-n8n-oneoff", "gtme-handoff", "gtme-sync-skills"]],
   ];
-
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const title = (name) => name.replace(/^gtme-/, "").split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ")
-    .replace(/\bJev\b/, "Jev").replace(/\bGeo\b/, "GEO").replace(/\bN8n\b/, "n8n");
-  const card = (s) => `
-    <article class="card">
-      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[s.name] || ICONS.default}</svg></div>
-      <div><h3>${esc(title(s.name))}</h3><code>${esc(s.name)}</code></div>
-      <p>${esc(s.summary)}</p>
-      ${s.triggers.length ? `<div class="chips">${s.triggers.map((t) => `<span class="chip">"${esc(t)}"</span>`).join("")}</div>` : ""}
-    </article>`;
+  const KINDS = { trigger: "Trigger", ai: "AI judgment", data: "Read data", logic: "Logic", action: "Action", output: "Output" };
 
   const skills = window.SKILLS || [];
-  const placed = new Set(GROUPS.flatMap(([, names]) => names));
-  const groups = [...GROUPS, ["Other", skills.filter((s) => !placed.has(s.name)).map((s) => s.name)]];
-  document.getElementById("groups").innerHTML = groups
-    .map(([label, names]) => {
-      const items = names.map((n) => skills.find((s) => s.name === n)).filter(Boolean);
-      return items.length ? `<h2>${esc(label)}</h2><div class="grid">${items.map(card).join("")}</div>` : "";
-    })
-    .join("");
+  const flows = window.FLOWS || {};
+  const app = document.getElementById("app");
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const svg = (key, w = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[key] || ICONS.box}</svg>`;
+  const title = (name) => name.replace(/^gtme-/, "").split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ")
+    .replace(/\bGeo\b/, "GEO").replace(/\bN8n\b/, "n8n");
+  const chips = (s) => s.triggers.length
+    ? `<div class="chips">${s.triggers.map((t) => `<span class="chip">"${esc(t)}"</span>`).join("")}</div>` : "";
+
+  function overview() {
+    document.title = "GTME Skills";
+    const placed = new Set(GROUPS.flatMap(([, n]) => n));
+    const groups = [...GROUPS, ["Other", skills.filter((s) => !placed.has(s.name)).map((s) => s.name)]];
+    app.innerHTML = `
+      <header>
+        <h1>GTME Skills</h1>
+        <p>The Claude skills behind Flux GTM: scoping a client, scoring leads, building signal
+          workflows and writing outreach. Click a skill to see what it does, step by step.</p>
+      </header>
+      ${groups.map(([label, names]) => {
+        const items = names.map((n) => skills.find((s) => s.name === n)).filter(Boolean);
+        return items.length ? `<h2>${esc(label)}</h2><div class="grid">${items.map((s) => `
+          <a class="card" href="#${esc(s.name)}">
+            <div class="icon">${svg(SKILL_ICON[s.name])}</div>
+            <div><h3>${esc(title(s.name))}</h3><code>${esc(s.name)}</code></div>
+            <p>${esc(s.summary)}</p>
+            ${chips(s)}
+            <span class="more">See the flow →</span>
+          </a>`).join("")}</div>` : "";
+      }).join("")}
+      <footer>Built from <code>.claude/skills</code> in <a href="${REPO}">gtme-agents</a>.</footer>`;
+  }
+
+  function detail(s) {
+    document.title = title(s.name) + " · GTME Skills";
+    const steps = flows[s.name] || [{ kind: "trigger", icon: "chat", label: "Ask Claude", sub: s.triggers[0] || "", note: "No diagram yet: add one in site/flows.js." },
+      { kind: "output", icon: SKILL_ICON[s.name] || "box", label: title(s.name), sub: s.name, note: s.summary }];
+    const used = [...new Set(steps.map((n) => n.kind))];
+    app.innerHTML = `
+      <a class="back" href="#">← All skills</a>
+      <div class="detail-head">
+        <div class="icon">${svg(SKILL_ICON[s.name])}</div>
+        <div><h1>${esc(title(s.name))}</h1><code>${esc(s.name)}</code></div>
+      </div>
+      <p class="detail-summary">${esc(s.summary)}</p>
+      ${chips(s)}
+      <div class="canvas"><div class="flow">
+        ${steps.map((n, i) => `${i ? '<div class="edge"></div>' : ""}
+          <div class="node ${n.kind}" data-i="${i}" style="--c: var(--${n.kind})" title="${esc(n.note || "")}">
+            <div class="box"><span class="port in"></span>${svg(n.icon, 1.6)}<span class="port out"></span></div>
+            <div class="label">${esc(n.label)}</div>
+            <div class="sub">${esc(n.sub || "")}</div>
+          </div>`).join("")}
+      </div></div>
+      <div class="legend">${used.map((k) => `<span><i style="--c: var(--${k})"></i>${KINDS[k]}</span>`).join("")}</div>
+      <ol class="steps">${steps.map((n, i) => `
+        <li data-i="${i}" style="--c: var(--${n.kind})"><span class="n">${i + 1}</span>
+          <div><b>${esc(n.label)}</b><p>${esc(n.note || n.sub || "")}</p></div></li>`).join("")}
+      </ol>
+      <p class="source">Full instructions: <a href="${REPO}/blob/main/.claude/skills/${esc(s.name)}/SKILL.md">SKILL.md on GitHub</a></p>`;
+    // Hovering a node highlights its step, and the other way round
+    const pair = (i, on) => app.querySelectorAll(`[data-i="${i}"]`).forEach((el) => el.classList.toggle("active", on));
+    app.querySelectorAll("[data-i]").forEach((el) => {
+      el.addEventListener("mouseenter", () => pair(el.dataset.i, true));
+      el.addEventListener("mouseleave", () => pair(el.dataset.i, false));
+    });
+  }
+
+  function route() {
+    const name = decodeURIComponent(location.hash.slice(1));
+    const s = skills.find((x) => x.name === name);
+    s ? detail(s) : overview();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  route();
 </script>
 </body>
 </html>
