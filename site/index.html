@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTME Skills</title>
+<meta name="description" content="The Claude skills behind Flux GTM's lead sourcing, scoring and outreach.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1c1c1e; --muted: #6b6b70;
+    --line: #e6e6e2; --accent: #4f46e5; --accent-soft: #eef0ff; --chip: #f1f1ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111113; --card: #1a1a1d; --text: #ededef; --muted: #9a9aa1;
+      --line: #2a2a2e; --accent: #8b8cf8; --accent-soft: #23234a; --chip: #232327;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 56px 16px 80px; }
+  header h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  header p { color: var(--muted); margin: 0; max-width: 560px; }
+  h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin: 44px 0 14px; font-weight: 600;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .icon {
+    width: 44px; height: 44px; border-radius: 11px; background: var(--accent-soft);
+    color: var(--accent); display: grid; place-items: center;
+  }
+  .icon svg { width: 22px; height: 22px; }
+  .card h3 { margin: 0; font-size: 16px; }
+  .card code { font-size: 12px; color: var(--muted); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .chip { background: var(--chip); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+  footer { margin-top: 56px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>GTME Skills</h1>
+    <p>The Claude skills behind Flux GTM: scoping a client, scoring leads, building signal
+      workflows and writing outreach.</p>
+  </header>
+  <div id="groups"></div>
+  <footer>Built from <code>.claude/skills</code> in
+    <a href="https://github.com/Evan-Wynne/gtme-agents">gtme-agents</a>. Add a skill and this page updates on the next deploy.</footer>
+</main>
+
+<script src="skills.js"></script>
+<script>
+  // Simple line icons (24px grid). Skills without an entry get the default.
+  const ICONS = {
+    "gtme-leadflow-intake": '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>',
+    "gtme-geo-visibility-audit": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    "gtme-jev-scoring": '<path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><circle cx="12" cy="18" r="1"/>',
+    "gtme-signal-pipeline": '<circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/>',
+    "gtme-score-review": '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20M8 10.5l2 2 3.5-3.5"/>',
+    "gtme-cold-batch-writer": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+    "gtme-n8n-oneoff": '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+    "gtme-handoff": '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    "gtme-sync-skills": '<path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>',
+    default: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6M12 9v6"/>',
+  };
+  const GROUPS = [
+    ["Scope a client", ["gtme-leadflow-intake", "gtme-geo-visibility-audit"]],
+    ["Score and build", ["gtme-jev-scoring", "gtme-signal-pipeline", "gtme-score-review"]],
+    ["Reach out", ["gtme-cold-batch-writer"]],
+    ["Utilities", ["gtme-n8n-oneoff", "gtme-handoff", "gtme-sync-skills"]],
+  ];
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const title = (name) => name.replace(/^gtme-/, "").split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ")
+    .replace(/\bJev\b/, "Jev").replace(/\bGeo\b/, "GEO").replace(/\bN8n\b/, "n8n");
+  const card = (s) => `
+    <article class="card">
+      <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[s.name] || ICONS.default}</svg></div>
+      <div><h3>${esc(title(s.name))}</h3><code>${esc(s.name)}</code></div>
+      <p>${esc(s.summary)}</p>
+      ${s.triggers.length ? `<div class="chips">${s.triggers.map((t) => `<span class="chip">"${esc(t)}"</span>`).join("")}</div>` : ""}
+    </article>`;
+
+  const skills = window.SKILLS || [];
+  const placed = new Set(GROUPS.flatMap(([, names]) => names));
+  const groups = [...GROUPS, ["Other", skills.filter((s) => !placed.has(s.name)).map((s) => s.name)]];
+  document.getElementById("groups").innerHTML = groups
+    .map(([label, names]) => {
+      const items = names.map((n) => skills.find((s) => s.name === n)).filter(Boolean);
+      return items.length ? `<h2>${esc(label)}</h2><div class="grid">${items.map(card).join("")}</div>` : "";
+    })
+    .join("");
+</script>
+</body>
+</html>

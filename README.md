@@ -32,6 +32,18 @@ packages them for Evan's claude.ai account.
 New client, in order: intake → jev-scoring (design and test) → signal-pipeline → score-review
 → contacts and copy. Repeat score-review after every change to questions or rules.
 
+## Skills site
+
+`site/` is a one-page overview of the skills: an icon, a one-line summary and the trigger
+phrases for each. `scripts/build-site.mjs` reads every `.claude/skills/*/SKILL.md` and writes
+`site/skills.js`, so a new skill appears on the next deploy.
+
+- **Vercel:** import the repo; `vercel.json` already sets the build command and the `site`
+  output folder. No framework, no dependencies.
+- **Locally:** `node scripts/build-site.mjs`, then open `site/index.html`.
+- **New skill:** it lands under "Other" with a default icon until it gets an entry in
+  `ICONS` and `GROUPS` in `site/index.html`.
+
 ## Data & GDPR
 
 Evan is in the EU. Do not commit lead lists, emails, or other personal data to this repo.
